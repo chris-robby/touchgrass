@@ -147,7 +147,7 @@ function start(events: Ev[]): void {
       if (d === now0) classes.push("today");
       if (d < now0) classes.push("past");
       const chips = list.slice(0, CHIPS_PER_CELL).map((e) => `
-        <a class="cal-chip${e.multiDay ? " long" : ""}" href="${eventHref(e.id)}" data-id="${e.id}">
+        <a class="cal-chip${e.multiDay ? " long" : e.is_free ? "" : " paid"}" href="${eventHref(e.id)}" data-id="${e.id}">
           <b>${esc(e.multiDay ? "→" : chipTime(e.startMs))}</b> ${esc(e.title)}
         </a>`).join("");
       const more = list.length - CHIPS_PER_CELL;

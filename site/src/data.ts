@@ -11,6 +11,9 @@ export interface RawEvent {
   start: string;
   end: string | null;
   all_day: boolean;
+  price_min: number;
+  price_max: number;
+  price_label: string;
   is_free: boolean;
   category: string;
   audience: string | null;
@@ -22,8 +25,17 @@ export interface RawEvent {
   lat: number | null;
   lng: number | null;
   url: string | null;
+  links: Link[];
   image: string | null;
   status: string;
+  source: string;
+  organizer?: string | null;
+}
+
+/** Extra "learn more" links found in the source data. */
+export interface Link {
+  type: "website" | "facebook" | "instagram" | "phone";
+  url: string;
 }
 
 /** RawEvent plus fields computed once in the browser. */
@@ -94,7 +106,7 @@ function prepare(e: RawEvent): Ev {
     endDay: endDay < startDay ? startDay : endDay,
     multiDay: endDay > startDay,
     haystack: normalize(
-      [e.title, e.description, e.venue, e.borough, categoryLabel(e.category, "fr"),
+      [e.title, e.description, e.venue, e.borough, e.organizer, categoryLabel(e.category, "fr"),
         categoryLabel(e.category, "en")].join(" "),
     ),
   };
@@ -134,6 +146,7 @@ export interface Filters {
   cat: string;
   boro: string;
   dropin: boolean;
+  free: boolean;
 }
 
 /** The [first, last] day the "When" filter covers, or null for "any time". */
@@ -164,6 +177,7 @@ export function matches(e: Ev, f: Filters, range: [string, string] | null): bool
   if (f.cat && e.category !== f.cat) return false;
   if (f.boro && e.borough !== f.boro) return false;
   if (f.dropin && e.registration !== "drop-in") return false;
+  if (f.free && !e.is_free) return false;
   if (f.q) {
     for (const word of normalize(f.q).split(/\s+/)) {
       if (word && !e.haystack.includes(word)) return false;
@@ -173,7 +187,7 @@ export function matches(e: Ev, f: Filters, range: [string, string] | null): bool
 }
 
 export function hasActiveFilters(f: Filters): boolean {
-  return Boolean(f.q || f.when || f.cat || f.boro || f.dropin);
+  return Boolean(f.q || f.when || f.cat || f.boro || f.dropin || f.free);
 }
 
 // ---------------------------------------------------------------- URL state
@@ -195,6 +209,7 @@ export function readFilters(): Filters {
     cat: p.get("cat") ?? "",
     boro: p.get("boro") ?? "",
     dropin: p.get("dropin") === "1",
+    free: p.get("free") === "1",
   };
 }
 
@@ -220,7 +235,7 @@ export function filtersToParams(f: Filters): Record<string, string | boolean> {
   const custom = f.when === "custom";
   return {
     q: f.q, when: f.when, from: custom ? f.from : "", to: custom ? f.to : "",
-    cat: f.cat, boro: f.boro, dropin: f.dropin,
+    cat: f.cat, boro: f.boro, dropin: f.dropin, free: f.free,
   };
 }
 

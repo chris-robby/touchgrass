@@ -7,6 +7,6 @@
 To add a source: create sources/<name>.py with those functions and add it to
 ADAPTERS below. Nothing else in the pipeline needs to change.
 """
-from . import ville_montreal
+from . import loisirs_montreal, ville_montreal
 
-ADAPTERS = [ville_montreal]
+ADAPTERS = [ville_montreal, loisirs_montreal]

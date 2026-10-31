@@ -5,7 +5,7 @@ Usage:  python scripts/build_data.py [--no-enrich] [--force]
   --no-enrich  skip fetching montreal.ca pages (faster; events have dates only)
   --force      write the output even if the event count dropped sharply
 
-Steps: load each source -> keep free, upcoming events -> enrich with page
+Steps: load each source -> keep upcoming events costing <= $10 -> enrich with page
 details -> drop cancelled/ended -> dedupe -> sanity checks -> write.
 
 If anything goes wrong (download fails, zero events, big drop), the script
@@ -29,6 +29,8 @@ EVENTS_FILE = DATA_DIR / "events.json"
 META_FILE = DATA_DIR / "meta.json"
 CACHE_DIR = DATA_DIR / "cache"
 
+# Keep events costing at most this much (0 = free). Events with an unknown price are dropped.
+MAX_PRICE = 10
 # Fail if the new build has fewer than this share of the previous build's events.
 MIN_RATIO_VS_PREVIOUS = 0.5
 
@@ -51,6 +53,10 @@ def has_ended(event: dict, now: datetime) -> bool:
     return datetime.fromisoformat(event["end"]) < now
 
 
+def affordable(event: dict) -> bool:
+    return event.get("price_min") is not None and event["price_min"] <= MAX_PRICE
+
+
 def dedupe(events: list[dict]) -> list[dict]:
     seen, out = set(), []
     for e in events:
@@ -67,8 +73,8 @@ def build(enrich: bool = True) -> list[dict]:
         print(f"[{adapter.SOURCE_ID}] loading...", flush=True)
         events = adapter.load()
         print(f"  {len(events)} public activities in source")
-        events = [e for e in events if e["is_free"] and end_date(e) >= now.date()]
-        print(f"  {len(events)} free and upcoming")
+        events = [e for e in events if affordable(e) and end_date(e) >= now.date()]
+        print(f"  {len(events)} upcoming, free or <= ${MAX_PRICE}")
         if enrich and hasattr(adapter, "enrich"):
             events = adapter.enrich(events, CACHE_DIR / f"{adapter.SOURCE_ID}.json")
         events = [e for e in events if e["status"] != "cancelled" and not has_ended(e, now)]
@@ -118,7 +124,9 @@ def main() -> int:
         "count": len(events),
         "with_time": sum(1 for e in events if not e["all_day"]),
         "with_coordinates": sum(1 for e in events if e["lat"] is not None),
-        "sources": sorted({e["source"] for e in events}),
+        "free": sum(1 for e in events if e["is_free"]),
+        "by_source": {s: sum(1 for e in events if e["source"] == s)
+                      for s in sorted({e["source"] for e in events})},
     })
     print(f"Wrote {len(events)} events to {EVENTS_FILE.relative_to(ROOT)}")
     return 0

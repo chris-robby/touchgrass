@@ -1,0 +1,539 @@
+{
+ "free_skating": {
+  "id_activite": "899607",
+  "municipalité": "Ville de Montréal",
+  "categorie": "Sports et activités physiques",
+  "sous_categorie": "Sports sur glace",
+  "nom": "Patin libre pour tous",
+  "description": null,
+  "date_debut": "2026-08-31",
+  "date_fin": "2026-12-23",
+  "promoteur": "Le Sud-Ouest",
+  "telephone_promoteur": null,
+  "est_inscription_obligatoire": "Faux",
+  "est_annulee": "Faux",
+  "raison_annulation": null,
+  "nb_maximum_places": null,
+  "age_minimum": null,
+  "age_maximum": null,
+  "est_credit_impot_offert": "Faux",
+  "groupe": "01",
+  "informations_inscription": [],
+  "directives": [
+   {
+    "id": 95375,
+    "description": "Pour de plus amples informations:: 514-872-2786"
+   },
+   {
+    "id": 95376,
+    "description": "Activité : gratuite pour tous."
+   }
+  ],
+  "seances": [
+   {
+    "id": "677573",
+    "jour_semaine": "Lundi",
+    "heure_debut": "16:30:00",
+    "heure_fin": "17:30:00",
+    "site": "Aréna Gadbois",
+    "adresse_site": "5485 chemin de la Côte-Saint-Paul , Montréal, H4C1X3",
+    "telephone_site": "5148723459",
+    "installation_principale": "Aire de patinage, aréna Georges-Mantha",
+    "latitude": 45.4661644653,
+    "longitude": -73.5946970226,
+    "loc_x": 297394.97,
+    "loc_y": 5036252.87
+   },
+   {
+    "id": "677574",
+    "jour_semaine": "Mardi",
+    "heure_debut": "16:30:00",
+    "heure_fin": "17:30:00",
+    "site": "Aréna Gadbois",
+    "adresse_site": "5485 chemin de la Côte-Saint-Paul , Montréal, H4C1X3",
+    "telephone_site": "5148723459",
+    "installation_principale": "Aire de patinage, aréna Georges-Mantha",
+    "latitude": 45.4661644653,
+    "longitude": -73.5946970226,
+    "loc_x": 297394.97,
+    "loc_y": 5036252.87
+   },
+   {
+    "id": "677575",
+    "jour_semaine": "Mercredi",
+    "heure_debut": "16:30:00",
+    "heure_fin": "17:30:00",
+    "site": "Aréna Gadbois",
+    "adresse_site": "5485 chemin de la Côte-Saint-Paul , Montréal, H4C1X3",
+    "telephone_site": "5148723459",
+    "installation_principale": "Aire de patinage, aréna Georges-Mantha",
+    "latitude": 45.4661644653,
+    "longitude": -73.5946970226,
+    "loc_x": 297394.97,
+    "loc_y": 5036252.87
+   },
+   {
+    "id": "677576",
+    "jour_semaine": "Jeudi",
+    "heure_debut": "16:30:00",
+    "heure_fin": "17:30:00",
+    "site": "Aréna Gadbois",
+    "adresse_site": "5485 chemin de la Côte-Saint-Paul , Montréal, H4C1X3",
+    "telephone_site": "5148723459",
+    "installation_principale": "Aire de patinage, aréna Georges-Mantha",
+    "latitude": 45.4661644653,
+    "longitude": -73.5946970226,
+    "loc_x": 297394.97,
+    "loc_y": 5036252.87
+   },
+   {
+    "id": "677577",
+    "jour_semaine": "Vendredi",
+    "heure_debut": "16:30:00",
+    "heure_fin": "17:30:00",
+    "site": "Aréna Gadbois",
+    "adresse_site": "5485 chemin de la Côte-Saint-Paul , Montréal, H4C1X3",
+    "telephone_site": "5148723459",
+    "installation_principale": "Aire de patinage, aréna Georges-Mantha",
+    "latitude": 45.4661644653,
+    "longitude": -73.5946970226,
+    "loc_x": 297394.97,
+    "loc_y": 5036252.87
+   },
+   {
+    "id": "677578",
+    "jour_semaine": "Samedi",
+    "heure_debut": "14:30:00",
+    "heure_fin": "16:00:00",
+    "site": "Aréna Gadbois",
+    "adresse_site": "5485 chemin de la Côte-Saint-Paul , Montréal, H4C1X3",
+    "telephone_site": "5148723459",
+    "installation_principale": "Aire de patinage, aréna Georges-Mantha",
+    "latitude": 45.4661644653,
+    "longitude": -73.5946970226,
+    "loc_x": 297394.97,
+    "loc_y": 5036252.87
+   },
+   {
+    "id": "677579",
+    "jour_semaine": "Samedi",
+    "heure_debut": "21:00:00",
+    "heure_fin": "22:30:00",
+    "site": "Aréna Gadbois",
+    "adresse_site": "5485 chemin de la Côte-Saint-Paul , Montréal, H4C1X3",
+    "telephone_site": "5148723459",
+    "installation_principale": "Aire de patinage, aréna Georges-Mantha",
+    "latitude": 45.4661644653,
+    "longitude": -73.5946970226,
+    "loc_x": 297394.97,
+    "loc_y": 5036252.87
+   }
+  ]
+ },
+ "priced_hockey": {
+  "id_activite": "899622",
+  "municipalité": "Ville de Montréal",
+  "categorie": "Sports sur glace",
+  "sous_categorie": "Hockey sur glace",
+  "nom": "Hockey libre Tous",
+  "description": null,
+  "date_debut": "2026-09-08",
+  "date_fin": "2026-12-23",
+  "promoteur": "Le Sud-Ouest",
+  "telephone_promoteur": null,
+  "est_inscription_obligatoire": "Faux",
+  "est_annulee": "Faux",
+  "raison_annulation": null,
+  "nb_maximum_places": 20.0,
+  "age_minimum": null,
+  "age_maximum": null,
+  "est_credit_impot_offert": "Faux",
+  "groupe": "01",
+  "informations_inscription": [],
+  "directives": [
+   {
+    "id": 73962,
+    "description": "Pour de plus amples informations: 514 872-3300"
+   },
+   {
+    "id": 93201,
+    "description": "Équipement complet obligatoire: casque avec grille, gants, protège-cou, protège-coudes et coquille."
+   },
+   {
+    "id": 93202,
+    "description": "Le participant n'ayant pas l'équipement requis n’est pas admis à l'activité."
+   },
+   {
+    "id": 93203,
+    "description": "AUCUN prêt d'équipement n’est possible."
+   },
+   {
+    "id": 93204,
+    "description": "Coût : 6,5 $ par personne. (Résident 3 ans à 64 ans )"
+   },
+   {
+    "id": 101154,
+    "description": "Coût : 3,25 $ par personne. (Résident 65 ans + )"
+   },
+   {
+    "id": 105539,
+    "description": "Coût : 8 $ par personne. ( Non-Résident 3 ans à 64 ans  )"
+   },
+   {
+    "id": 105540,
+    "description": "Coût : 4 $ par personne. (Non-Résident 65 ans + )"
+   },
+   {
+    "id": 105541,
+    "description": "Places limitées (premier arrivé, premier servi)."
+   },
+   {
+    "id": 105542,
+    "description": "Réservation par téléphone seulement."
+   }
+  ],
+  "seances": [
+   {
+    "id": "677605",
+    "jour_semaine": "Mardi",
+    "heure_debut": "14:00:00",
+    "heure_fin": "15:15:00",
+    "site": "Aréna Saint-Charles",
+    "adresse_site": "1055 rue d' Hibernia , Montréal, H3K2V3",
+    "telephone_site": "5148723300",
+    "installation_principale": "Aire de patinage, aréna Saint-Charles",
+    "latitude": 45.479653717,
+    "longitude": -73.5637740175,
+    "loc_x": 299814.25,
+    "loc_y": 5037749.55
+   },
+   {
+    "id": "677606",
+    "jour_semaine": "Mercredi",
+    "heure_debut": "14:00:00",
+    "heure_fin": "15:15:00",
+    "site": "Aréna Saint-Charles",
+    "adresse_site": "1055 rue d' Hibernia , Montréal, H3K2V3",
+    "telephone_site": "5148723300",
+    "installation_principale": "Aire de patinage, aréna Saint-Charles",
+    "latitude": 45.479653717,
+    "longitude": -73.5637740175,
+    "loc_x": 299814.25,
+    "loc_y": 5037749.55
+   }
+  ]
+ },
+ "hourly_rental": {
+  "id_activite": "900250",
+  "municipalité": "Ville de Montréal",
+  "categorie": "Sports et activités physiques",
+  "sous_categorie": "Sports de raquette",
+  "nom": "Pickleball à l'heure",
+  "description": "Pour réserver un terrain, vous devez détenir une carte biblio-loisirs.Il est possible d'effectuer une réservation 3 jours à l'avance.L'inscription doit se faire sur la plate-forme loisirs.montréal.ca.\r\nVous cliquez sur Réservations d'espaces pour accéder à la pastille de pickleball. \r\nEnsuite vous afficher les filtres. Le tarif est de 19$/h\r\nHoraire: dimanche de 12h à 13h. \r\n\r\nNotez que l'entrée pour le Pickleball est du côté du centre communautaire Elgar pour accéder au gymnase et non du côté de la rue Gaspé (école IDS).",
+  "date_debut": "2026-10-04",
+  "date_fin": "2026-12-06",
+  "promoteur": "Arrondissement de Verdun",
+  "telephone_promoteur": "5147657270",
+  "est_inscription_obligatoire": "Faux",
+  "est_annulee": "Faux",
+  "raison_annulation": null,
+  "nb_maximum_places": null,
+  "age_minimum": null,
+  "age_maximum": null,
+  "est_credit_impot_offert": "Faux",
+  "groupe": "12",
+  "informations_inscription": [],
+  "directives": "[{'id': 107256, 'description': 'Vous devez détenir une carte biblio-loisirs pour effectuer votre réservation.\\xa0'}, {'id': 107257, 'description': 'Les réservations peuvent être effectuées jusqu’à 3 jours à l’avance. Le tarif est de 19\\xa0$/heure, non remboursable.'}, {'id': 107258, 'description': \"Pour accéder au terrain, présentez-vous à l'heure de votre réservation et ayez en votre possession la preuve de réservation, une pièce d'identité.\"}, {'id': 107259, 'description': 'Les participants doivent fournir sa raquette et ses balles'}, {'id': 107260, 'description': \"Les participants sont invités à apporter leur bouteille d'eau réutilisable.\"}, {'id': 108580, 'description': \"Pour toutes questions, veuillez communiquez par courriel à l'adresse suivante; verdun.ccmg@montreal.ca\"}]",
+  "seances": [
+   {
+    "id": "678263",
+    "jour_semaine": "Dimanche",
+    "heure_debut": "12:00:00",
+    "heure_fin": "13:00:00",
+    "site": "École Île-des-Soeurs",
+    "adresse_site": "530 rue De Gaspé , Verdun, H3E1E7",
+    "telephone_site": "5147657150",
+    "installation_principale": "Gym M-Fonctions B C - École I des S",
+    "latitude": 45.4561279576,
+    "longitude": -73.5479337785,
+    "loc_x": 301051.06,
+    "loc_y": 5035134.28
+   }
+  ]
+ },
+ "no_price": {
+  "id_activite": "897512",
+  "municipalité": "Ville de Montréal",
+  "categorie": "Sports de raquette",
+  "sous_categorie": "Tennis",
+  "nom": "Tennis",
+  "description": "Détenir une carte biblio-loisirs pour se procurer un abonnement de tennis et effectuer une réservation.\r\nIl est possible d'effectuer une réservation 2 jours et 2 h à l'avance.\r\nUne réservation est valide pour une durée d'1 heure seulement.\r\nSi un terrain demeure vacant plus de 15 minutes, le détenteur de la réservation en perd la possession et un autre joueur peut s’approprier le terrain pour la durée restante.\r\nLe détenteur de la réservation doit être présent sur le terrain en tout temps durant la réservation.\r\nVous devez annuler votre réservation si vous ne pouvez vous présenter. Pour annuler votre séance: Allez sur votre profil Loisirs Montréal, repérer l'activité à annuler dans la section \" Achat \". Cliquer sur le bouton \" Actions \". Cliquer sur le bouton \" Annulation \" et Confirmer l'annulation en cliquant sur \" Oui \"\r\nL'Arrondissement se réserve le droit d'annuler la réservation et l'abonnement de toutes personnes ne respectant par les conditions de réservation ou les consignes.",
+  "date_debut": "2026-05-01",
+  "date_fin": "2026-11-16",
+  "promoteur": "Arrondissement de Verdun",
+  "telephone_promoteur": "5147657270",
+  "est_inscription_obligatoire": "Faux",
+  "est_annulee": "Faux",
+  "raison_annulation": null,
+  "nb_maximum_places": null,
+  "age_minimum": 6.0,
+  "age_maximum": null,
+  "est_credit_impot_offert": "Faux",
+  "groupe": "03",
+  "informations_inscription": [],
+  "directives": [
+   {
+    "id": 105183,
+    "description": "Les participants sont invités à apporter leur bouteille d'eau réutilisable."
+   }
+  ],
+  "seances": []
+ },
+ "registration_required": {
+  "id_activite": "901018",
+  "municipalité": "Ville de Montréal",
+  "categorie": "Activités récréatives et communautaires",
+  "sous_categorie": "",
+  "nom": "Zone épique samedi 31 octobre",
+  "description": null,
+  "date_debut": "2026-10-31",
+  "date_fin": "2026-10-31",
+  "promoteur": "Saint-Laurent",
+  "telephone_promoteur": "5148556110",
+  "est_inscription_obligatoire": "Vrai",
+  "est_annulee": "Faux",
+  "raison_annulation": null,
+  "nb_maximum_places": 45.0,
+  "age_minimum": 6.0,
+  "age_maximum": 12.0,
+  "est_credit_impot_offert": "Faux",
+  "groupe": "04",
+  "informations_inscription": [
+   {
+    "status": "Au comptoir - résidant d’arrondissement",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   },
+   {
+    "status": "Au comptoir - non résidant",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   },
+   {
+    "status": "Au comptoir - résidant de la Ville",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   },
+   {
+    "status": "Au comptoir -résidant d’agglomération",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   },
+   {
+    "status": "Internet résidant d’arrondissement",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   },
+   {
+    "status": "Internet non résidant",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   },
+   {
+    "status": "Internet résidant de la ville",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   },
+   {
+    "status": "Internet - résidant d’agglomération",
+    "date_heure_debut": "2026-10-17T08:30:00",
+    "date_heure_fin": "2026-10-31T16:00:00"
+   }
+  ],
+  "directives": [
+   {
+    "id": 101176,
+    "description": "Lieu: Centre des loisirs"
+   },
+   {
+    "id": 101177,
+    "description": "Activités: jeux coopératifs, grands jeux, bricolage, jeux extérieurs, thématiques variées."
+   },
+   {
+    "id": 101178,
+    "description": "Politique d'annulation: Aucune demande de remboursement ne sera acceptée."
+   },
+   {
+    "id": 101179,
+    "description": "Dans le cas d'une annulation, il est possible d'ajouter une note de crédit au dossier, au plus tard le mercredi précédent les activités."
+   },
+   {
+    "id": 101278,
+    "description": "Pour plus d'informations consulter le lien suivant: https://montreal.ca/articles/la-zone-epique-de-saint-laurent-73117"
+   }
+  ],
+  "seances": [
+   {
+    "id": "679295",
+    "jour_semaine": "Samedi",
+    "heure_debut": "13:30:00",
+    "heure_fin": "16:00:00",
+    "site": "Centre des loisirs Saint-Laurent",
+    "adresse_site": "1375 rue Grenet , Saint-Laurent, H4L5K3",
+    "telephone_site": "5148556110",
+    "installation_principale": "Salle polyvalente no 231, centre Saint-Laurent",
+    "latitude": 45.5137978904,
+    "longitude": -73.6909452714,
+    "loc_x": 289881.23,
+    "loc_y": 5041559.76
+   }
+  ]
+ },
+ "cancelled": {
+  "id_activite": "893336",
+  "municipalité": "Ville de Montréal",
+  "categorie": "Activités récréatives et communautaires",
+  "sous_categorie": "",
+  "nom": "Vélo « Fatbike » - Enfants - 10 h à 11 h",
+  "description": "L’activité est reportée à une date ultérieure. Merci de votre compréhension !",
+  "date_debut": "2026-01-24",
+  "date_fin": "2026-01-24",
+  "promoteur": "LaSalle",
+  "telephone_promoteur": null,
+  "est_inscription_obligatoire": "Vrai",
+  "est_annulee": "Vrai",
+  "raison_annulation": "07",
+  "nb_maximum_places": 10.0,
+  "age_minimum": 8.0,
+  "age_maximum": null,
+  "est_credit_impot_offert": "Faux",
+  "groupe": "01",
+  "informations_inscription": [
+   {
+    "status": "Internet résidant d’arrondissement",
+    "date_heure_debut": "2026-01-14T08:00:00",
+    "date_heure_fin": "2026-01-23T12:00:00"
+   },
+   {
+    "status": "Internet non résidant",
+    "date_heure_debut": "2026-01-14T08:00:00",
+    "date_heure_fin": "2026-01-23T12:00:00"
+   },
+   {
+    "status": "Internet résidant de la ville",
+    "date_heure_debut": "2026-01-14T08:00:00",
+    "date_heure_fin": "2026-01-23T12:00:00"
+   },
+   {
+    "status": "Internet - résidant d’agglomération",
+    "date_heure_debut": "2026-01-14T08:00:00",
+    "date_heure_fin": "2026-01-23T12:00:00"
+   }
+  ],
+  "directives": [
+   {
+    "id": 104267,
+    "description": "Chaque personne participant à l'activité doit procéder à la réservation de son matériel."
+   },
+   {
+    "id": 104268,
+    "description": "L'équipement peut être récupéré 15 minutes avant la réservation."
+   },
+   {
+    "id": 104269,
+    "description": "Votre matériel est réservé jusqu'à 15 minutes après le début de votre réservation. Par la suite, il sera remis à un participant n'ayant pas réservé."
+   },
+   {
+    "id": 104270,
+    "description": "Des explications sur l'utilisation des équipements seront donnés sur place, mais nous n'offrons pas d'animation ou d'encadrement particulier."
+   },
+   {
+    "id": 104271,
+    "description": "Une pièce d'identité valide (ex. carte d'assurance maladie ou permis de conduire) est requise, par personne ou famille, pour récupérer l'équipement. Elle sera remise au retour de celui-ci."
+   },
+   {
+    "id": 104272,
+    "description": "La carte de la bibliothèque n'est pas une pièce d'identité valide."
+   },
+   {
+    "id": 104273,
+    "description": "Les jeunes de 15 ans et moins doivent être accompagnés d'un adulte."
+   },
+   {
+    "id": 104274,
+    "description": "Pour la réservation de vélo, différentes grandeurs seront disponibles (10 grandeurs vélos adultes, 10 grandeurs vélos enfants)."
+   }
+  ],
+  "seances": [
+   {
+    "id": "667545",
+    "jour_semaine": "Samedi",
+    "heure_debut": "10:00:00",
+    "heure_fin": "11:00:00",
+    "site": "Parc des Rapides",
+    "adresse_site": "7770 boulevard LaSalle , LaSalle, H8P1X6",
+    "telephone_site": "514",
+    "installation_principale": "Terrasse Serre",
+    "latitude": 45.4266314495,
+    "longitude": -73.5960398521,
+    "loc_x": 297284.72,
+    "loc_y": 5031859.72
+   }
+  ]
+ },
+ "string_sessions": {
+  "id_activite": "896849",
+  "municipalité": "Ville de Montréal",
+  "categorie": "Activités récréatives et communautaires",
+  "sous_categorie": "",
+  "nom": "Accès sports de raquettes : Carte + Activation",
+  "description": "Carte magnétique donnant accès aux terrains extérieurs de tennis et de pickleball de l'arrondissement Anjou.\r\n\r\nNotez qu'il s'agit d'une vente finale, non-remboursable et non échangeable.\r\n\r\nL'achat et l'activation de la carte se fait au centre communautaire d'Anjou.\r\n\r\nLes terrains sont accessibles aux détenteurs d'une carte magnétique, sauf lorsque des cours ou des ligues y sont prévus.",
+  "date_debut": "2026-05-02",
+  "date_fin": "2026-10-12",
+  "promoteur": "Ville de Montréal - Arrondissement Anjou",
+  "telephone_promoteur": "5144938222",
+  "est_inscription_obligatoire": "Vrai",
+  "est_annulee": "Faux",
+  "raison_annulation": null,
+  "nb_maximum_places": 850.0,
+  "age_minimum": 16.0,
+  "age_maximum": null,
+  "est_credit_impot_offert": "Faux",
+  "groupe": "JA",
+  "informations_inscription": [
+   {
+    "status": "Au comptoir - résidant d’arrondissement",
+    "date_heure_debut": "2026-04-16T09:00:00",
+    "date_heure_fin": "2026-10-11T17:00:00"
+   },
+   {
+    "status": "Au comptoir - résidant de la Ville",
+    "date_heure_debut": "2026-04-30T09:00:00",
+    "date_heure_fin": "2026-10-11T17:00:00"
+   }
+  ],
+  "directives": [
+   {
+    "id": 99412,
+    "description": "Accès du 2 mai au 12 octobre 2026 de 7 h à 22 h 30."
+   },
+   {
+    "id": 99413,
+    "description": "Vérifiez la disponibilité des terrains en consultant le babillard de chaque parc."
+   },
+   {
+    "id": 99414,
+    "description": "Notez qu'il s'agit d'une vente finale, non-remboursable et non échangeable."
+   },
+   {
+    "id": 105086,
+    "description": "Vous pouvez conserver votre carte pour avoir accès au tarif de réactivation l'an prochain."
+   },
+   {
+    "id": 107562,
+    "description": "Achat au centre communautaire d'Anjou"
+   }
+  ],
+  "seances": "[{'id': '673028', 'jour_semaine': '', 'heure_debut': '07:00:00', 'heure_fin': '22:30:00', 'site': 'Centre Communautaire Anjou', 'adresse_site': '7800 boulevard Métropolitain , Anjou, H1K1A1', 'telephone_site': '514', 'installation_principale': None, 'latitude': 45.607937749386224, 'longitude': -73.56330393551454, 'loc_x': 299862.24, 'loc_y': 5052005.89}, {'id': '673029', 'jour_semaine': '', 'heure_debut': '07:00:00', 'heure_fin': '22:30:00', 'site': 'Centre Communautaire Anjou', 'adresse_site': '7800 boulevard Métropolitain , Anjou, H1K1A1', 'telephone_site': '514', 'installation_principale': None, 'latitude': 45.607937749386224, 'longitude': -73.56330393551454, 'loc_x': 299862.24, 'loc_y': 5052005.89}, {'id': '673030', 'jour_semaine': '', 'heure_debut': '07:00:00', 'heure_fin': '22:30:00', 'site': 'Centre Communautaire Anjou', 'adresse_site': '7800 boulevard Métropolitain , Anjou, H1K1A1', 'telephone_site': '514', 'installation_principale': None, 'latitude': 45.607937749386224, 'longitude': -73.56330393551454, 'loc_x': 299862.24, 'loc_y': 5052005.89}, {'id': '673031', 'jour_semaine': '', 'heure_debut': '07:00:00', 'heure_fin': '22:30:00', 'site': 'Centre Communautaire Anjou', 'adresse_site': '7800 boulevard Métropolitain , Anjou, H1K1A1', 'telephone_site': '514', 'installation_principale': None, 'latitude': 45.607937749386224, 'longitude': -73.56330393551454, 'loc_x': 299862.24, 'loc_y': 5052005.89}, {'id': '673032', 'jour_semaine': '', 'heure_debut': '07:00:00', 'heure_fin': '22:30:00', 'site': 'Centre Communautaire Anjou', 'adresse_site': '7800 boulevard Métropolitain , Anjou, H1K1A1', 'telephone_site': '514', 'installation_principale': None, 'latitude': 45.607937749386224, 'longitude': -73.56330393551454, 'loc_x': 299862.24, 'loc_y': 5052005.89}, {'id': '673033', 'jour_semaine': '', 'heure_debut': '07:00:00', 'heure_fin': '22:30:00', 'site': 'Centre Communautaire Anjou', 'adresse_site': '7800 boulevard Métropolitain , Anjou, H1K1A1', 'telephone_site': '514', 'installation_principale': None, 'latitude': 45.607937749386224, 'longitude': -73.56330393551454, 'loc_x': 299862.24, 'loc_y': 5052005.89}]"
+ }
+}

@@ -18,18 +18,17 @@ import hashlib
 import html
 import json
 import re
-import time
-import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from .common import clean, extract_links, http_get, http_get_retry
 
 SOURCE_ID = "ville-de-montreal"
 GEOJSON_URL = (
     "https://donnees.montreal.ca/dataset/6a4cbf2c-c9b7-413a-86b1-e8f7081e2578"
     "/resource/35307457-a00f-4912-9941-8095ead51f6e/download/evenements.geojson"
 )
-USER_AGENT = "TouchGrass/0.1 (free Montreal events listing; uses montreal.ca open data)"
 
 # Source "type_evenement" -> our category slug. The UI translates slugs to FR/EN.
 # None means "not a public activity": the event is dropped.
@@ -88,14 +87,6 @@ LNG_RANGE = (-74.1, -73.4)
 
 # --------------------------------------------------------------------------- helpers
 
-def clean(value) -> str | None:
-    """The dataset writes missing values as the text "nan" or "None"."""
-    if value is None:
-        return None
-    s = str(value).strip()
-    return None if s in ("", "nan", "None", "NaN") else s
-
-
 def to_float(value) -> float | None:
     s = clean(value)
     try:
@@ -121,29 +112,14 @@ def event_id(url: str | None, title: str, start: str) -> str:
     return f"mtl-h{digest}"
 
 
-def http_get(url: str, timeout: int = 60) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
-
-
 # --------------------------------------------------------------------------- step 1
 
-def fetch_geojson(retries: int = 3, wait: float = 10.0) -> dict:
-    """Download the dataset, retrying a few times. Raises if it never works."""
-    last_error = None
-    for attempt in range(1, retries + 1):
-        try:
-            data = json.loads(http_get(GEOJSON_URL))
-            if not isinstance(data.get("features"), list):
-                raise ValueError("GeoJSON has no 'features' list")
-            return data
-        except Exception as e:  # network error, bad JSON, ...
-            last_error = e
-            print(f"  download attempt {attempt}/{retries} failed: {e}")
-            if attempt < retries:
-                time.sleep(wait)
-    raise RuntimeError(f"Could not download {GEOJSON_URL}: {last_error}")
+def fetch_geojson() -> dict:
+    """Download the dataset (with retries). Raises if it never works."""
+    data = json.loads(http_get_retry(GEOJSON_URL))
+    if not isinstance(data.get("features"), list):
+        raise ValueError("GeoJSON has no 'features' list")
+    return data
 
 
 def normalize(feature: dict) -> dict | None:
@@ -187,7 +163,8 @@ def normalize(feature: dict) -> dict | None:
         "start": start,              # "YYYY-MM-DD" until enrich() adds a time
         "end": end,
         "all_day": True,
-        "price_min": 0 if is_free else None,
+        "price_min": 0 if is_free else None,  # "Payant" never says how much
+        "price_max": 0 if is_free else None,
         "price_label": cost or "",
         "is_free": is_free,
         "category": category,
@@ -200,6 +177,7 @@ def normalize(feature: dict) -> dict | None:
         "lat": lat,
         "lng": lng,
         "url": url,
+        "links": extract_links(clean(p.get("description")) or ""),
         "image": None,
         "status": "scheduled",
         "source": SOURCE_ID,
@@ -269,6 +247,7 @@ def apply_details(event: dict, details: dict | None) -> dict:
     # Prefer the page's description when it's longer (the GeoJSON one is a short summary).
     if len(details.get("description") or "") > len(e["description"]):
         e["description"] = details["description"]
+        e["links"] = extract_links(e["description"])
     e["status"] = details.get("status") or e["status"]
     return e
 

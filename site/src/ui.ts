@@ -1,7 +1,7 @@
 // Shared page pieces: header, footer, mobile bottom nav, filter bar, event rows.
 import { Ev, Filters, filterQuery, hasActiveFilters, loadMeta } from "./data";
 import { fmtUpdated, timeColumn } from "./format";
-import { categoryLabel, categorySlugs, lang, setLang, t } from "./i18n";
+import { categoryLabel, categorySlugs, lang, priceTag, setLang, t } from "./i18n";
 
 export type Page = "list" | "calendar" | "map" | "about";
 
@@ -105,7 +105,9 @@ export interface FilterBarOptions {
   boroughs: string[];
 }
 
-export const NO_FILTERS: Filters = { q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false };
+export const NO_FILTERS: Filters = {
+  q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false, free: false,
+};
 
 /**
  * Renders the filter controls into `slot`. The page owns the filter state:
@@ -138,7 +140,10 @@ export function renderFilterBar(
             <label>${t("when.to")} <input type="date" name="to" value="${f.to}"></label>
           </div>
           <span class="divider" aria-hidden="true"></span>` : ""}
-        <button type="button" class="chip-btn" data-dropin aria-pressed="${f.dropin}">${esc(t("dropin"))}</button>
+        <div class="btn-group" role="group" aria-label="${t("access")}">
+          <button type="button" class="chip-btn" data-toggle="free" aria-pressed="${f.free}">${esc(t("free"))}</button>
+          <button type="button" class="chip-btn" data-toggle="dropin" aria-pressed="${f.dropin}">${esc(t("dropin"))}</button>
+        </div>
         <span class="divider" aria-hidden="true"></span>
         <label class="select-label"><span class="select-caption">${t("category")}</span>
           <select name="cat">
@@ -174,12 +179,13 @@ export function renderFilterBar(
   root.querySelectorAll<HTMLInputElement>('input[type="date"]').forEach((input) =>
     input.addEventListener("change", () => emit({ [input.name]: input.value })));
 
-  const dropin = root.querySelector<HTMLButtonElement>("[data-dropin]")!;
-  dropin.addEventListener("click", () => {
-    const on = !get().dropin;
-    dropin.setAttribute("aria-pressed", String(on));
-    emit({ dropin: on });
-  });
+  root.querySelectorAll<HTMLButtonElement>("[data-toggle]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.toggle as "free" | "dropin";
+      const on = !get()[key];
+      btn.setAttribute("aria-pressed", String(on));
+      emit({ [key]: on });
+    }));
 
   root.querySelectorAll<HTMLSelectElement>("select").forEach((sel) =>
     sel.addEventListener("change", () => emit({ [sel.name]: sel.value })));
@@ -205,7 +211,9 @@ export function bindSearch(input: HTMLInputElement, emit: (patch: Partial<Filter
 // ---------------------------------------------------------------- event rows
 
 export function tagsHtml(e: Ev): string {
-  let html = `<span class="tag tag-free">${t("tag.free")}</span>`;
+  let html = e.is_free
+    ? `<span class="tag tag-free">${t("tag.free")}</span>`
+    : `<span class="tag tag-outline tag-price">${esc(priceTag(e.price_min, e.price_max))}</span>`;
   if (e.registration === "required") {
     html += `<span class="tag tag-outline" title="${t("tag.required.long")}"><span aria-hidden="true">${t("tag.required")}</span><span class="sr-only">${t("tag.required.long")}</span></span>`;
   } else if (e.registration === "ticket") {

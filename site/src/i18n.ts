@@ -34,9 +34,9 @@ const fr = {
   "nav.calendar": "Calendrier",
   "nav.map": "Carte",
   "lang.switch": "Switch to English",
-  "hero.title": "Des choses gratuites à faire à Montréal.",
+  "hero.title": "Des choses gratuites ou presque à faire à Montréal.",
   "hero.sub":
-    "Tout ici est gratuit. Nouvelles activités chaque matin, tirées des événements publics de la Ville de Montréal.",
+    "Tout ici est gratuit ou coûte 10 $ et moins. Nouvelles activités chaque matin, tirées des données ouvertes de la Ville de Montréal.",
   "search.label": "Rechercher des activités",
   "search.placeholder": "Concerts, parcs, ateliers…",
   "filters": "Filtres",
@@ -49,6 +49,7 @@ const fr = {
   "when.to": "Au",
   "access": "Accès",
   "dropin": "Sans inscription",
+  "free": "Gratuit seulement",
   "category": "Catégorie",
   "category.all": "Toutes",
   "borough": "Arrondissement",
@@ -74,8 +75,15 @@ const fr = {
   "detail.borough": "Arrondissement",
   "detail.for": "Pour qui",
   "detail.access": "Accès",
+  "detail.price": "Prix",
   "detail.dropin": "Entrée libre",
+  "detail.more": "En savoir plus",
+  "detail.maps": "Itinéraire (Google Maps)",
+  "detail.search": "Rechercher sur Google",
+  "detail.source": "Source",
+  "detail.priceNote": "Tarif indiqué par l'organisateur ; il peut varier selon l'âge ou la résidence.",
   "detail.official": "Page officielle",
+  "detail.officialLoisirs": "Voir sur Loisirs Montréal",
   "detail.ics": "Ajouter au calendrier (.ics)",
   "detail.icsShort": "Ajouter (.ics)",
   "detail.google": "Google Agenda",
@@ -102,9 +110,9 @@ const en: Record<Key, string> = {
   "nav.calendar": "Calendar",
   "nav.map": "Map",
   "lang.switch": "Passer en français",
-  "hero.title": "Free things to do in Montréal.",
+  "hero.title": "Free & almost-free things to do in Montréal.",
   "hero.sub":
-    "Everything here is free. Fresh listings every morning from the City of Montréal's public events.",
+    "Everything here is free or $10 and under. Fresh listings every morning from the City of Montréal's open data.",
   "search.label": "Search events",
   "search.placeholder": "Concerts, parks, workshops…",
   "filters": "Filters",
@@ -117,6 +125,7 @@ const en: Record<Key, string> = {
   "when.to": "To",
   "access": "Access",
   "dropin": "Drop-in only",
+  "free": "Free only",
   "category": "Category",
   "category.all": "All",
   "borough": "Borough",
@@ -142,8 +151,15 @@ const en: Record<Key, string> = {
   "detail.borough": "Borough",
   "detail.for": "For",
   "detail.access": "Access",
+  "detail.price": "Price",
   "detail.dropin": "Drop-in, no registration",
+  "detail.more": "Learn more",
+  "detail.maps": "Directions (Google Maps)",
+  "detail.search": "Search on Google",
+  "detail.source": "Source",
+  "detail.priceNote": "Price as given by the organizer; it may vary by age or residency.",
   "detail.official": "Official page",
+  "detail.officialLoisirs": "See on Loisirs Montréal",
   "detail.ics": "Add to calendar (.ics)",
   "detail.icsShort": "Add (.ics)",
   "detail.google": "Google Calendar",
@@ -206,6 +222,25 @@ const CATEGORIES: Record<string, [string, string]> = {
   "theatre": ["Théâtre", "Theatre"],
   "wellness": ["Bien-être", "Wellness"],
   "other": ["Autre", "Other"],
+};
+
+/** 6.5 -> "6,50 $" (fr) / "$6.50" (en); whole dollars without decimals. */
+export function money(x: number): string {
+  const n = x % 1 ? x.toFixed(2) : String(x);
+  return lang === "fr" ? `${n.replace(".", ",")} $` : `$${n}`;
+}
+
+/** Text for the price tag: "GRATUIT", "6,50 $", "3,25–8 $" / "$3.25–$8". */
+export function priceTag(min: number, max: number): string {
+  if (max === 0) return t("tag.free");
+  if (min === max) return money(min);
+  if (lang === "fr") return `${money(min).replace(" $", "")}–${money(max)}`;
+  return `${money(min)}–${money(max)}`;
+}
+
+export const SOURCE_NAMES: Record<string, string> = {
+  "ville-de-montreal": "Ville de Montréal — Événements publics",
+  "loisirs-montreal": "Ville de Montréal — Loisirs Montréal",
 };
 
 export function categoryLabel(slug: string, l: Lang = lang): string {

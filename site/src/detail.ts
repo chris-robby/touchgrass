@@ -1,11 +1,12 @@
 // Event detail: a <dialog> (centered on desktop, bottom sheet on mobile), with
-// "Add to calendar" (.ics download) and a Google Calendar link.
+// "Learn more" links (official page, organizer's site/socials, phone, Google Maps,
+// Google search), "Add to calendar" (.ics download) and a Google Calendar link.
 // The open event is kept in the URL (?e=<id>) so it can be shared and the
 // back button closes it.
 import type L from "leaflet";
 import { Ev, param, setParams } from "./data";
 import { whenText } from "./format";
-import { audienceLabel, categoryLabel, t } from "./i18n";
+import { audienceLabel, categoryLabel, lang, money, SOURCE_NAMES, t } from "./i18n";
 import { addPin, createMap } from "./map";
 import { esc, icons, tagsHtml } from "./ui";
 
@@ -46,6 +47,49 @@ function accessText(e: Ev): string {
   return t("detail.dropin");
 }
 
+function priceText(e: Ev): string {
+  if (e.is_free) return t("tag.free").charAt(0) + t("tag.free").slice(1).toLowerCase();
+  const range = e.price_min === e.price_max ? money(e.price_min) : `${money(e.price_min)} – ${money(e.price_max)}`;
+  return `${range}. ${t("detail.priceNote")}`;
+}
+
+function linkLabel(url: string, type: string): string {
+  if (type === "facebook") return "Facebook";
+  if (type === "instagram") return "Instagram";
+  if (type === "phone") {
+    const d = url.replace(/\D/g, "").slice(-10);
+    return `${d.slice(0, 3)} ${d.slice(3, 6)}-${d.slice(6)}`;
+  }
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+/** "Learn more": organizer links from the data, then Google Maps and Google search. */
+function learnMoreHtml(e: Ev): string {
+  const items: { href: string; label: string; kind: string }[] = e.links.map((l) => ({
+    href: l.url, label: linkLabel(l.url, l.type), kind: l.type,
+  }));
+  const place = [e.venue, e.address].filter(Boolean).join(", ");
+  if (place || e.lat != null) {
+    const query = place ? `${place}, Montréal` : `${e.lat},${e.lng}`;
+    items.push({ href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, label: t("detail.maps"), kind: "maps" });
+  }
+  const q = [e.title, e.venue ?? "", "Montréal"].filter(Boolean).join(" ");
+  items.push({ href: `https://www.google.com/search?q=${encodeURIComponent(q)}`, label: t("detail.search"), kind: "search" });
+
+  return `
+    <section class="learn-more" aria-labelledby="learn-more-title">
+      <h3 id="learn-more-title">${t("detail.more")}</h3>
+      <ul>
+        ${items.map((i) => `<li><a href="${esc(i.href)}"${i.kind === "phone" ? "" : ' target="_blank" rel="noopener"'} data-kind="${i.kind}">${esc(i.label)}</a></li>`).join("")}
+      </ul>
+      <p class="source-line">${t("detail.source")}${lang === "fr" ? " : " : ": "}${esc(SOURCE_NAMES[e.source] ?? e.source)}${e.organizer ? ` · ${esc(e.organizer)}` : ""}</p>
+    </section>`;
+}
+
 function descriptionHtml(text: string): string {
   return text.split(/\n{2,}/).map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
 }
@@ -73,12 +117,14 @@ export function openDetail(e: Ev, push = true): void {
         <dt>${t("detail.where")}</dt><dd><span class="strong">${esc(where)}</span>${e.address ? `<br><span class="muted">${esc(e.address)}</span>` : ""}</dd>
         <dt>${t("detail.borough")}</dt><dd>${esc(e.borough ?? "—")}</dd>
         <dt>${t("detail.for")}</dt><dd>${esc(audienceLabel(e.audience))}</dd>
+        <dt>${t("detail.price")}</dt><dd>${esc(priceText(e))}</dd>
         <dt>${t("detail.access")}</dt><dd>${esc(accessText(e))}</dd>
       </dl>
       <div class="detail-desc">${descriptionHtml(e.description)}</div>
       ${e.lat != null ? `<div class="detail-map" role="img" aria-label="${t("detail.mapLabel")}"></div>` : ""}
+      ${learnMoreHtml(e)}
       <div class="detail-actions">
-        ${e.url ? `<a class="btn btn-primary" href="${esc(e.url)}" target="_blank" rel="noopener">${t("detail.official")}</a>` : ""}
+        ${e.url ? `<a class="btn btn-primary" href="${esc(e.url)}" target="_blank" rel="noopener">${t(e.source === "loisirs-montreal" ? "detail.officialLoisirs" : "detail.official")}</a>` : ""}
         <div class="detail-actions-row">
           <button type="button" class="btn btn-outline ics-btn"><span class="wide-only">${t("detail.ics")}</span><span class="narrow-only">${t("detail.icsShort")}</span></button>
           <a class="btn btn-outline" href="${esc(googleCalendarUrl(e))}" target="_blank" rel="noopener">${t("detail.google")}</a>

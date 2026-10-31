@@ -1,9 +1,21 @@
-# TouchGrass — free events in Montréal
+# TouchGrass — free & almost-free events in Montréal
 
-A website listing **free** public events in Montréal, rebuilt automatically every day
-from the city's open data.
+A website listing **free and $10-and-under** things to do in Montréal, rebuilt
+automatically every day from the city's open data.
 
-> Données : Ville de Montréal, [Événements publics](https://donnees.montreal.ca/dataset/evenements-publics), CC BY 4.0.
+> Données : Ville de Montréal ([Événements publics](https://donnees.montreal.ca/dataset/evenements-publics),
+> [Programmation de sports et loisirs](https://donnees.montreal.ca/dataset/programmation-sports-loisirs-montreal)), CC BY 4.0.
+
+## Sources
+
+| Source | Link | Used for |
+|---|---|---|
+| Événements publics (Ville de Montréal, GeoJSON, daily) | [dataset](https://donnees.montreal.ca/dataset/evenements-publics) | Public events: storytimes, shows, workshops, exhibitions… (free ones only — paid ones never state a price) |
+| Each event's page on montreal.ca | e.g. [montreal.ca/evenements](https://montreal.ca/evenements) | Exact times, venue, address, cancellations (schema.org JSON-LD) |
+| Programmation de sports et loisirs (Loisirs Montréal, JSON, daily) | [dataset](https://donnees.montreal.ca/dataset/programmation-sports-loisirs-montreal) · [loisirs.montreal.ca](https://loisirs.montreal.ca/) | Drop-in sports & leisure (free skating, free swim, drop-in hockey…) whose price is stated and ≤ $10 |
+
+Checked and **not** used (Oct 2026): Cyclovias (no 2026 dates published), seasonal
+activities in the large parks (last updated 2016), éco-quartier events (2024).
 
 ## Status
 
@@ -20,7 +32,7 @@ from the city's open data.
 every push to `main`, and on demand (Actions tab → "Daily build & deploy" → Run workflow):
 
 1. run the Python tests
-2. `python scripts/build_data.py` — fetch + build `data/events.json`
+2. `python scripts/build_data.py` — fetch every source + build `data/events.json`
 3. build the site (`site/dist/`)
 4. deploy to GitHub Pages
 
@@ -80,16 +92,19 @@ tiles, no API key). Design follows `touchgrass-handoff/DESIGN.md`.
 | `map.html` | Full map, one pin per venue with a count; tap → that venue's events |
 | `about.html` | What the site is + Ville de Montréal attribution |
 
-- **Filters** (date, drop-in only, 24 categories, borough, search) live in the URL, so
+- **Filters** (date, free only, drop-in only, 24 categories, borough, search) live in the URL, so
   any view can be shared; the List/Calendar/Map links keep them.
-- **Event detail** is a `<dialog>` (bottom sheet on phones) with the official page link,
-  a `.ics` download and a Google Calendar link. The open event is in the URL (`?e=`), so
+- **Event detail** is a `<dialog>` (bottom sheet on phones) with price, the official page
+  link, a **"Learn more"** list (organizer website / Facebook / phone found in the data,
+  Google Maps directions, a Google search) and the source, plus a `.ics` download and a
+  Google Calendar link. The open event is in the URL (`?e=`), so
   the back button closes it.
 - **FR/EN**: all UI text is in `src/i18n.ts`; French is the default (24-hour "19h30"),
   English uses "7:30 PM". Event text stays in French (that's what the city publishes).
 - **Long-running events** (exhibitions lasting weeks or months) are listed once, on
   their *last* day ("Until Dec 6"), so they don't bury each day's own events. In the
-  calendar they show on every day they run, after the timed events, as outlined chips.
+  calendar they show on every day they run, after the timed events, as dashed chips.
+  Free events are lime chips, ≤ $10 ones outlined (as in the design).
 - Why no calendar library: a month grid with chips is ~150 lines; FullCalendar would
   add far more code than it saves here.
 - Map tiles come from openstreetmap.org, which is fine for a small site. If traffic
@@ -98,17 +113,16 @@ tiles, no API key). Design follows `touchgrass-handoff/DESIGN.md`.
 ## How the data flows
 
 ```
-donnees.montreal.ca (GeoJSON, updated nightly)
-        │  sources/ville_montreal.py  load()
-        ▼
- normalized events  ── civic events dropped (council meetings, consultations…)
-        │  scripts/build_data.py
-        ▼
- keep free + not yet ended
-        │  sources/ville_montreal.py  enrich()
-        ▼   reads each event's montreal.ca page for exact times + venue
-        │   (cached in data/cache/, so daily runs only fetch new events)
-        ▼
+Événements publics (GeoJSON)          Loisirs Montréal (JSON)
+   │ sources/ville_montreal.py            │ sources/loisirs_montreal.py
+   │ civic events dropped                 │ drop-in only; price read from the text;
+   │                                      │ weekly sessions -> dated events (next 6 weeks)
+   └──────────────┬───────────────────────┘
+                  ▼  scripts/build_data.py
+        keep price ≤ $10 (known) + not yet ended
+                  │  ville_montreal.enrich(): each event's montreal.ca page for
+                  │  exact times + venue (cached in data/cache/)
+                  ▼
  drop cancelled/ended, dedupe, sanity checks
         ▼
  data/events.json  +  data/meta.json
@@ -120,8 +134,15 @@ the previous `events.json`. (Use `--force` if a big drop is expected.)
 
 ## Decisions so far
 
-- **Free only.** The dataset only says `Gratuit` or `Payant`, never an amount — not even
-  on the official pages — so "≤ $10" can't be checked. Paid events are dropped.
+- **Free or ≤ $10, only when the price is known.** Événements publics only says
+  `Gratuit` or `Payant` (never an amount, even on the official pages), so its paid events
+  are dropped. Loisirs Montréal writes prices in free text ("Coût : 6,5 $ par personne",
+  "Activité gratuite"); `parse_price()` reads them and ignores fees, refunds, hourly
+  rentals and discounts. Activities that mention no price are dropped.
+- **Loisirs Montréal: drop-in only.** Most of that dataset is registration courses. In
+  practice only a dozen activities qualify (Le Sud-Ouest and Verdun write their prices;
+  other boroughs don't). Its site has no stable page per activity, so "official page"
+  links to a Loisirs Montréal search for the activity name.
 - **Times and venues come from the event pages.** The dataset has dates only and is
   missing venue names for ~97% of events. Each montreal.ca event page includes
   structured data (schema.org JSON-LD) with this info; `robots.txt` allows these pages.
@@ -129,8 +150,8 @@ the previous `events.json`. (Use `--force` if a big drop is expected.)
   *Assemblée publique*, *Rencontre avec personne élue*.
 - **Categories and audiences are stored as English slugs** (`storytime`, `kids`…) so the
   UI can translate them to FR/EN and use them in URLs.
-- **"Drop-in only" filter instead of a price filter**: everything is free, but ~60% of
-  events need registration and ~16% a free ticket, shown as INSCRIPTION / BILLET tags.
+- **"Drop-in only" and "Free only" filters**: ~60% of city events need registration and
+  ~16% a free ticket, shown as INSCRIPTION / BILLET tags.
 - **All 24 categories** are shown as-is in the category filter.
 - Missing values in the source are the text `"nan"`/`"None"`, and a couple of records
   have broken coordinates — both are cleaned up.
@@ -139,11 +160,13 @@ the previous `events.json`. (Use `--force` if a big drop is expected.)
 
 | field | type | notes |
 |---|---|---|
-| `id` | string | `mtl-<id from montreal.ca URL>` |
+| `id` | string | `mtl-<montreal.ca id>` or `lm-<activity>-<session>-<date>` |
 | `title`, `description` | string | French |
 | `start`, `end` | string | `2026-11-14T10:30:00-05:00`, or `2026-11-14` when `all_day` |
 | `all_day` | bool | true when no time is known |
-| `price_min` / `price_label` / `is_free` | | always `0` / `"Gratuit"` / `true` for now |
+| `price_min`, `price_max` | number | dollars, `0` = free (only events ≤ $10 are kept) |
+| `price_label` | string | e.g. `"Gratuit"`, `"3,25 $ – 8 $"` |
+| `is_free` | bool | |
 | `category` | slug | e.g. `storytime`, `music`, `other` |
 | `audience` | slug \| null | `all`, `adults`, `kids`, `preschool`, `family`, `seniors`, `teens` |
 | `format` | slug \| null | `indoor`, `outdoor`, `online` |
@@ -151,11 +174,15 @@ the previous `events.json`. (Use `--force` if a big drop is expected.)
 | `venue`, `address`, `borough` | string \| null | |
 | `lat`, `lng` | number \| null | |
 | `url`, `image` | string \| null | official page, picture |
+| `links` | list | `{type: website\|facebook\|instagram\|phone, url}` found in the source text |
+| `organizer` | string \| null | Loisirs Montréal only: the promoter (borough or organization) |
 | `status` | string | `scheduled` or `postponed` (cancelled ones are dropped) |
-| `source`, `language` | string | `ville-de-montreal`, `fr` |
+| `source`, `language` | string | `ville-de-montreal` or `loisirs-montreal`; `fr` |
 
 ## Adding a source
 
 Create `sources/<name>.py` with `SOURCE_ID`, `load()` (returns events in the schema
 above) and optionally `enrich(events, cache_path)`, then add it to `ADAPTERS` in
-`sources/__init__.py`. Add fixtures and tests in `tests/`.
+`sources/__init__.py`. Shared helpers (borough names, Montréal time offsets, link
+extraction) are in `sources/common.py`. Add fixtures and tests in `tests/`, and the
+source's name to `SOURCE_NAMES` in `site/src/i18n.ts`.
