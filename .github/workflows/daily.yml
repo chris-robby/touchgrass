@@ -26,9 +26,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -37,7 +37,7 @@ jobs:
       # Cache keys can't be overwritten, so each run saves a new one and the next
       # run restores the most recent.
       - name: Restore data cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             data/cache
@@ -51,7 +51,7 @@ jobs:
       - name: Build events data
         run: python scripts/build_data.py
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -63,9 +63,9 @@ jobs:
           npm ci
           npm run build
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site/dist
 
@@ -77,4 +77,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
