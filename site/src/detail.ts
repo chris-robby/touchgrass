@@ -44,7 +44,8 @@ function ensureDialog(): HTMLDialogElement {
 function accessText(e: Ev): string {
   if (e.registration === "required") return t("tag.required.long");
   if (e.registration === "ticket") return t("tag.ticket.long");
-  return t("detail.dropin");
+  if (e.registration === "drop-in") return t("detail.dropin");
+  return t("detail.accessUnknown");
 }
 
 function priceText(e: Ev): string {

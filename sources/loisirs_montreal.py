@@ -260,7 +260,7 @@ def to_events(record: dict, today: date) -> list[dict]:
     return events
 
 
-def load(today: date | None = None) -> list[dict]:
+def load(cache_dir=None, today: date | None = None) -> list[dict]:
     today = today or date.today()
     records = json.loads(http_get_retry(DATA_URL))
     if not isinstance(records, list):

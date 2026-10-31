@@ -71,7 +71,7 @@ def build(enrich: bool = True) -> list[dict]:
     all_events = []
     for adapter in ADAPTERS:
         print(f"[{adapter.SOURCE_ID}] loading...", flush=True)
-        events = adapter.load()
+        events = adapter.load(CACHE_DIR)
         print(f"  {len(events)} public activities in source")
         events = [e for e in events if affordable(e) and end_date(e) >= now.date()]
         print(f"  {len(events)} upcoming, free or <= ${MAX_PRICE}")

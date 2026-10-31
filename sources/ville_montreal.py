@@ -185,7 +185,7 @@ def normalize(feature: dict) -> dict | None:
     }
 
 
-def load() -> list[dict]:
+def load(cache_dir: Path | None = None) -> list[dict]:
     data = fetch_geojson()
     events = [normalize(f) for f in data["features"]]
     return [e for e in events if e is not None]

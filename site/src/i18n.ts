@@ -77,6 +77,7 @@ const fr = {
   "detail.access": "Accès",
   "detail.price": "Prix",
   "detail.dropin": "Entrée libre",
+  "detail.accessUnknown": "Voir la page officielle",
   "detail.more": "En savoir plus",
   "detail.maps": "Itinéraire (Google Maps)",
   "detail.search": "Rechercher sur Google",
@@ -153,6 +154,7 @@ const en: Record<Key, string> = {
   "detail.access": "Access",
   "detail.price": "Price",
   "detail.dropin": "Drop-in, no registration",
+  "detail.accessUnknown": "See the official page",
   "detail.more": "Learn more",
   "detail.maps": "Directions (Google Maps)",
   "detail.search": "Search on Google",
@@ -241,6 +243,7 @@ export function priceTag(min: number, max: number): string {
 export const SOURCE_NAMES: Record<string, string> = {
   "ville-de-montreal": "Ville de Montréal — Événements publics",
   "loisirs-montreal": "Ville de Montréal — Loisirs Montréal",
+  "concordia": "Concordia University — Events",
 };
 
 export function categoryLabel(slug: string, l: Lang = lang): string {

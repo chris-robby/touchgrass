@@ -15,13 +15,15 @@ const fr = `
   heures du conte, concerts, ateliers, expositions, patin et bain libres, sports libres et plus encore.</p>
 
   <h2>D'où viennent les données?</h2>
-  <p>Toutes les activités proviennent des données ouvertes de la <strong>Ville de Montréal</strong>,
-  publiées sous licence <a href="${LICENSE}">Creative Commons Attribution 4.0 (CC BY 4.0)</a> :</p>
+  <p>Les activités proviennent des données ouvertes de la <strong>Ville de Montréal</strong>
+  (licence <a href="${LICENSE}">CC BY 4.0</a>) et du calendrier public de l'Université Concordia :</p>
   <ul>
     <li><a href="${DATASET}">Événements publics</a> — complétés par la page officielle de chaque
     activité sur <a href="https://montreal.ca/evenements">montreal.ca</a> (heures, lieux, annulations).</li>
     <li><a href="${LOISIRS_DATASET}">Programmation de sports et loisirs</a> (<a href="https://loisirs.montreal.ca/">Loisirs Montréal</a>) —
     seulement les activités <strong>sans inscription</strong> dont le prix (gratuit ou 10 $ et moins) est indiqué.</li>
+    <li><a href="https://www.concordia.ca/events.html">Événements de l'Université Concordia</a> — conférences,
+    expositions, ateliers et spectacles ouverts au public, gratuits ou à 10 $ et moins (fiches en anglais).</li>
   </ul>
   <p>La liste est mise à jour automatiquement chaque matin. Les activités annulées, terminées
   ou plus chères que 10 $ sont retirées, tout comme les séances du conseil et les consultations publiques.
@@ -33,7 +35,7 @@ const fr = `
   c'est elle qui fait foi.</p>
 
   <h2>Crédits</h2>
-  <p>Données : Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0. Cartes : © les contributeurs d'OpenStreetMap.
+  <p>Données : Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Université Concordia (concordia.ca). Cartes : © les contributeurs d'OpenStreetMap.
   touchgrass n'est pas affilié à la Ville de Montréal.</p>`;
 
 const en = `
@@ -42,13 +44,15 @@ const en = `
   storytimes, concerts, workshops, exhibitions, free skating and swimming, drop-in sports and more.</p>
 
   <h2>Where does the data come from?</h2>
-  <p>Every event comes from the City of Montréal's open data (<strong>Ville de Montréal</strong>),
-  published under the <a href="${LICENSE}">Creative Commons Attribution 4.0 (CC BY 4.0)</a> licence:</p>
+  <p>Events come from the City of Montréal's open data (<strong>Ville de Montréal</strong>,
+  <a href="${LICENSE}">CC BY 4.0</a> licence) and Concordia University's public calendar:</p>
   <ul>
     <li><a href="${DATASET}">Événements publics</a> (public events) — completed with each event's
     official page on <a href="https://montreal.ca/evenements">montreal.ca</a> (times, venues, cancellations).</li>
     <li><a href="${LOISIRS_DATASET}">Programmation de sports et loisirs</a> (<a href="https://loisirs.montreal.ca/">Loisirs Montréal</a>) —
     only <strong>drop-in</strong> activities whose price (free or $10 and under) is stated.</li>
+    <li><a href="https://www.concordia.ca/events.html">Concordia University events</a> — public talks,
+    exhibitions, workshops and performances that are free or $10 and under.</li>
   </ul>
   <p>The list updates automatically every morning. Cancelled and past events, and anything over $10,
   are removed, as are council meetings and public consultations. Every event links to more
@@ -60,7 +64,7 @@ const en = `
   <p>Event titles and descriptions come from the city and are in French.</p>
 
   <h2>Credits</h2>
-  <p>Data: Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0. Maps: © OpenStreetMap contributors.
+  <p>Data: Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Concordia University (concordia.ca). Maps: © OpenStreetMap contributors.
   touchgrass is not affiliated with the City of Montréal.</p>`;
 
 shell.main.innerHTML = `<article class="prose">${lang === "fr" ? fr : en}</article>`;

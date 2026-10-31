@@ -4,7 +4,8 @@ A website listing **free and $10-and-under** things to do in Montréal, rebuilt
 automatically every day from the city's open data.
 
 > Données : Ville de Montréal ([Événements publics](https://donnees.montreal.ca/dataset/evenements-publics),
-> [Programmation de sports et loisirs](https://donnees.montreal.ca/dataset/programmation-sports-loisirs-montreal)), CC BY 4.0.
+> [Programmation de sports et loisirs](https://donnees.montreal.ca/dataset/programmation-sports-loisirs-montreal)), CC BY 4.0;
+> [Université Concordia](https://www.concordia.ca/events.html).
 
 ## Sources
 
@@ -13,9 +14,20 @@ automatically every day from the city's open data.
 | Événements publics (Ville de Montréal, GeoJSON, daily) | [dataset](https://donnees.montreal.ca/dataset/evenements-publics) | Public events: storytimes, shows, workshops, exhibitions… (free ones only — paid ones never state a price) |
 | Each event's page on montreal.ca | e.g. [montreal.ca/evenements](https://montreal.ca/evenements) | Exact times, venue, address, cancellations (schema.org JSON-LD) |
 | Programmation de sports et loisirs (Loisirs Montréal, JSON, daily) | [dataset](https://donnees.montreal.ca/dataset/programmation-sports-loisirs-montreal) · [loisirs.montreal.ca](https://loisirs.montreal.ca/) | Drop-in sports & leisure (free skating, free swim, drop-in hockey…) whose price is stated and ≤ $10 |
+| Concordia University events (event pages) | [concordia.ca/events](https://www.concordia.ca/events.html) | Public talks, exhibitions, workshops, performances; ~90% free. Pages are cached; robots.txt allows current event pages |
 
-Checked and **not** used (Oct 2026): Cyclovias (no 2026 dates published), seasonal
-activities in the large parks (last updated 2016), éco-quartier events (2024).
+Checked and **not** used (Oct 2026):
+
+| Source | Why not |
+|---|---|
+| Cyclovias, seasonal activities in large parks, éco-quartier events (city open data) | No 2026 data (last updates 2025, 2016, 2024) |
+| BAnQ (Grande Bibliothèque) | Bot protection blocks automated access |
+| Quartier des spectacles | Rate-limits automated access (HTTP 429) |
+| McGill events, Musée d'art contemporain | Refuse automated access (HTTP 403) |
+| Accès culture (accesculture.com) | Pages contain generic filler text with no dates or venues; the domain doesn't look like the real network's anymore |
+| Loisirs Montréal's internal API (has prices) | Not part of the open data; undocumented, could change any time |
+| Tourisme Montréal, other museums (McCord Stewart, Espace pour la vie…) | No feed or structured event data found |
+| Vieux-Port, UQAM, Université de Montréal | Possible later: few free events (Vieux-Port) or no feed found yet |
 
 ## Status
 
@@ -183,11 +195,11 @@ the previous `events.json`. (Use `--force` if a big drop is expected.)
 | `links` | list | `{type: website\|facebook\|instagram\|phone, url}` found in the source text |
 | `organizer` | string \| null | Loisirs Montréal only: the promoter (borough or organization) |
 | `status` | string | `scheduled` or `postponed` (cancelled ones are dropped) |
-| `source`, `language` | string | `ville-de-montreal` or `loisirs-montreal`; `fr` |
+| `source`, `language` | string | `ville-de-montreal`, `loisirs-montreal` or `concordia`; `fr` or `en` |
 
 ## Adding a source
 
-Create `sources/<name>.py` with `SOURCE_ID`, `load()` (returns events in the schema
+Create `sources/<name>.py` with `SOURCE_ID`, `load(cache_dir)` (returns events in the schema
 above) and optionally `enrich(events, cache_path)`, then add it to `ADAPTERS` in
 `sources/__init__.py`. Shared helpers (borough names, Montréal time offsets, link
 extraction) are in `sources/common.py`. Add fixtures and tests in `tests/`, and the
