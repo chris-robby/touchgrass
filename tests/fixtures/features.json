@@ -1,0 +1,213 @@
+{
+  "free_with_coords": {
+    "type": "Feature",
+    "properties": {
+      "titre": "Heure du conte",
+      "url_fiche": "https://montreal.ca/evenements/heure-du-conte-119383",
+      "description": "Le samedi matin, les jeunes enfants découvrent de nouvelles histoires et comptines, sur différents thèmes.",
+      "date_debut": "2026-10-03",
+      "date_fin": "2026-10-03",
+      "type_evenement": "Heure du conte",
+      "public_cible": "Enfants d'âge préscolaire",
+      "emplacement": "En salle",
+      "inscription": "Sur inscription",
+      "cout": "Gratuit",
+      "arrondissement": "Côte-des-Neiges–Notre-Dame-de-Grâce",
+      "titre_adresse": "nan",
+      "adresse_principale": "nan",
+      "adresse_secondaire": "nan",
+      "code_postal": "nan",
+      "lat": 45.503324,
+      "long": -73.636934,
+      "X": "294099.2",
+      "Y": "5040387.2"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.636934,
+        45.503324
+      ]
+    }
+  },
+  "paid": {
+    "type": "Feature",
+    "properties": {
+      "titre": "Spectacle en rodage - Virginie Fortin",
+      "url_fiche": "https://montreal.ca/evenements/spectacle-en-rodage-virginie-fortin-108321",
+      "description": "Humoriste, comédienne et animatrice Virginie Fortin viendra nous faire rire avec son dernier spectacle en rodage!",
+      "date_debut": "2026-12-10",
+      "date_fin": "2026-12-10",
+      "type_evenement": "Humour",
+      "public_cible": "Adultes",
+      "emplacement": "En ligne",
+      "inscription": "Avec billet",
+      "cout": "Payant",
+      "arrondissement": "Lachine",
+      "titre_adresse": "nan",
+      "adresse_principale": "nan",
+      "adresse_secondaire": "nan",
+      "code_postal": "nan",
+      "lat": 45.433338,
+      "long": -73.68961,
+      "X": "289964.5",
+      "Y": "5032618"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.68961,
+        45.433338
+      ]
+    }
+  },
+  "council": {
+    "type": "Feature",
+    "properties": {
+      "titre": "Conseil d'arrondissement - Séance extraordinaire pour la présentation du budget 2026",
+      "url_fiche": "https://montreal.ca/evenements/conseil-darrondissement-seance-extraordinaire-pour-la-presentation-du-budget-2026-101082",
+      "description": "Assistez à la séance extraordinaire du conseil d'arrondissement de Pierrefonds-Roxboro le 26 novembre 2025, pour la présentation du budget 2026.",
+      "date_debut": "2025-11-26",
+      "date_fin": "2025-11-26",
+      "type_evenement": "Conseil et comité",
+      "public_cible": "Pour tous",
+      "emplacement": "En salle",
+      "inscription": "Entrée libre",
+      "cout": "Gratuit",
+      "arrondissement": "Pierrefonds-Roxboro",
+      "titre_adresse": "nan",
+      "adresse_principale": "nan",
+      "adresse_secondaire": "nan",
+      "code_postal": "nan",
+      "lat": 45.495489,
+      "long": -73.848159,
+      "X": "277589.1",
+      "Y": "5039566.3"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.848159,
+        45.495489
+      ]
+    }
+  },
+  "type_nan": {
+    "type": "Feature",
+    "properties": {
+      "titre": "Grande vente de livres d'occasion",
+      "url_fiche": "https://montreal.ca/evenements/grande-vente-de-livres-doccasion-51226",
+      "description": "En juin et en novembre, deux grandes ventes de livres usagés se tiennent à la bibliothèque Saul-Bellow.",
+      "date_debut": "2026-11-28",
+      "date_fin": "2026-12-06",
+      "type_evenement": "nan",
+      "public_cible": "Famille",
+      "emplacement": "En salle",
+      "inscription": "Entrée libre",
+      "cout": "Gratuit",
+      "arrondissement": "Lachine",
+      "titre_adresse": "nan",
+      "adresse_principale": "nan",
+      "adresse_secondaire": "nan",
+      "code_postal": "nan",
+      "lat": 45.440449,
+      "long": -73.691033,
+      "X": "289855",
+      "Y": "5033408.5"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.691033,
+        45.440449
+      ]
+    }
+  },
+  "no_coords": {
+    "type": "Feature",
+    "properties": {
+      "titre": "Séance de bien-être en ligne",
+      "url_fiche": "https://montreal.ca/evenements/seance-de-bien-etre-en-ligne-117408",
+      "description": "Découvrez notre série d’activités bien-être par visioconférence offert par la bibliothèque Saul-Bellow de Lachine.",
+      "date_debut": "2026-10-07",
+      "date_fin": "2026-10-07",
+      "type_evenement": "Bien-être",
+      "public_cible": "Adultes",
+      "emplacement": "En salle",
+      "inscription": "Sur inscription",
+      "cout": "Gratuit",
+      "arrondissement": "Lachine",
+      "titre_adresse": "nan",
+      "adresse_principale": "nan",
+      "adresse_secondaire": "nan",
+      "code_postal": "nan",
+      "lat": null,
+      "long": null,
+      "X": "",
+      "Y": ""
+    },
+    "geometry": null
+  },
+  "multi_day": {
+    "type": "Feature",
+    "properties": {
+      "titre": "Dans l’œil du lièvre -  Christine Sioui Wawanoloath",
+      "url_fiche": "https://montreal.ca/evenements/dans-loeil-du-lievre-christine-sioui-wawanoloath-87905",
+      "description": "Christine Sioui Wawanoloath présente un monde de magie et d’apparitions où la couleur et la lumière rappellent la technique du vitrail, Illustrations lumineuses",
+      "date_debut": "2025-06-25",
+      "date_fin": "2027-06-25",
+      "type_evenement": "Exposition",
+      "public_cible": "Pour tous",
+      "emplacement": "À l'extérieur",
+      "inscription": "Entrée libre",
+      "cout": "Gratuit",
+      "arrondissement": "Mercier–Hochelaga-Maisonneuve",
+      "titre_adresse": "nan",
+      "adresse_principale": "nan",
+      "adresse_secondaire": "nan",
+      "code_postal": "nan",
+      "lat": 45.553583493785,
+      "long": -73.539622314344,
+      "X": "301706.4",
+      "Y": "5045964.2"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.539622314344,
+        45.55358349378499
+      ]
+    }
+  },
+  "with_address": {
+    "type": "Feature",
+    "properties": {
+      "titre": "Classiques de Mozart à Stravinsky - Orchestre métropolitain",
+      "url_fiche": "https://montreal.ca/evenements/classiques-de-mozart-stravinsky-orchestre-metropolitain-112239",
+      "description": "Que devient l’esprit du classicisme viennois lorsqu’il se réinvente? Explorez-en l’héritage et les métamorphoses sous la direction de Louis Langr...",
+      "date_debut": "2027-05-13",
+      "date_fin": "2027-05-13",
+      "type_evenement": "Musique",
+      "public_cible": "Pour tous",
+      "emplacement": "En salle",
+      "inscription": "Avec billet",
+      "cout": "Payant",
+      "arrondissement": "Verdun",
+      "titre_adresse": "Église Notre-Dame-des-Sept-Douleurs",
+      "adresse_principale": "4155, rue Wellington",
+      "adresse_secondaire": "None",
+      "code_postal": "H4G1V7",
+      "lat": -73.567354,
+      "long": -73.567354,
+      "X": "302672.6",
+      "Y": "-8166222.8"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.567354,
+        -73.567354
+      ]
+    }
+  }
+}

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Touchgrass — week agenda</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=Atkinson+Hyperlegible:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1F5A3A}a:hover{color:#13281E}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: #13281E; background: #EEF2E6; display: flex; flex-direction: column; overflow: hidden">
+  <header style="background: #13281E; padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <svg width="24" height="20" viewBox="0 0 26 22" fill="none" stroke="#C8F169" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 21C4 14 2 9 1 6"></path><path d="M9 21C9 13 9 6 11 1"></path><path d="M14 21C14 15 16 10 20 7"></path><path d="M19 21C20 17 22 14 25 13"></path></svg>
+      <span style="font-family: 'Young Serif', Georgia, serif; font-size: 23px; color: #C8F169; flex: 1">touchgrass</span>
+      <button type="button" aria-label="Filters" style="width: 44px; height: 44px; border-radius: 8px; border: 1.5px solid #5E7A6A; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EEF2E6" stroke-width="2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg></button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 2px">
+      <h1 style="margin: 0; flex: 1; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 26px; color: #EEF2E6">Week of Nov 2</h1>
+      <button type="button" aria-label="Previous week" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EEF2E6" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+      <button type="button" aria-label="Next week" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EEF2E6" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+    </div>
+    <div role="group" aria-label="Week" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px">
+      <sc-for list="{{week}}" as="w" hint-placeholder-count="7">
+        <button type="button" aria-label="{{w.aria}}" style="{{w.style}}; height: 62px; border-radius: 8px; font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase">{{w.dow}}</span>
+          <span style="font-family: 'Young Serif', Georgia, serif; font-size: 19px">{{w.num}}</span>
+          <span style="font-size: 10px; font-weight: 700">{{w.count}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </header>
+
+  <div style="flex: 1; overflow: hidden; padding: 4px 16px 12px">
+    <h2 style="margin: 16px 0 0; display: flex; align-items: baseline; justify-content: space-between; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 22px">Saturday, Nov 7 <span style="font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4E5F55">5 events</span></h2>
+    <sc-for list="{{events}}" as="e" hint-placeholder-count="5">
+      <a href="MobileCalendar.dc.html" style="display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: start; padding: 13px 0; border-bottom: 1px solid #C9D3C1; text-decoration: none; color: #13281E">
+        <span style="font-family: 'Young Serif', Georgia, serif; font-size: 18px; line-height: 1.1">{{e.hm}}<span style="display: block; font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 11px; font-weight: 700; color: #4E5F55; margin-top: 2px">{{e.ampm}}</span></span>
+        <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1F5A3A">{{e.cat}}</span>
+          <span style="font-size: 16px; font-weight: 700; line-height: 1.25">{{e.title}}</span>
+          <span style="font-size: 13px; color: #4E5F55">{{e.venue}}</span>
+        </span>
+        <span style="{{e.priceStyle}}; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; padding: 4px 8px; border-radius: 4px; white-space: nowrap">{{e.price}}</span>
+      </a>
+    </sc-for>
+  </div>
+
+  <nav aria-label="Views" style="background: #13281E; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 4px 8px 20px">
+    <a href="MobileHome.dc.html" style="height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #B9C8B5; font-size: 12px; border-top: 3px solid transparent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>List</a>
+    <a href="MobileCalendar.dc.html" aria-current="page" style="height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #C8F169; font-size: 12px; font-weight: 700; border-top: 3px solid #C8F169"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Calendar</a>
+    <a href="Main.dc.html#map" style="height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #B9C8B5; font-size: 12px; border-top: 3px solid transparent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Map</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const days = [['Mon', 2, 0], ['Tue', 3, 1], ['Wed', 4, 1], ['Thu', 5, 1], ['Fri', 6, 1], ['Sat', 7, 5], ['Sun', 8, 2]];
+    const week = days.map(([dow, num, n]) => {
+      const sel = num === 7;
+      return {
+        dow, num,
+        count: n === 0 ? '–' : n + (n === 1 ? ' event' : ' events'),
+        aria: dow + ' November ' + num + ', ' + n + ' events',
+        style: sel ? 'background:#C8F169;color:#13281E;border:0' : 'background:transparent;color:#EEF2E6;border:1.5px solid #34503F'
+      };
+    });
+    const free = 'background:#C8F169;color:#13281E';
+    const paid = 'border:1.5px solid #13281E;color:#13281E';
+    const events = [
+      { hm: '9:30', ampm: 'AM', cat: 'Outdoors', title: 'Yoga au parc', venue: 'Parc La Fontaine', price: 'FREE', priceStyle: free },
+      { hm: '10:30', ampm: 'AM', cat: 'Family', title: 'Heure du conte', venue: 'Bibliothèque du quartier', price: 'FREE', priceStyle: free },
+      { hm: '1:00', ampm: 'PM', cat: 'Outdoors', title: 'Visite guidée des murales', venue: 'Départ : boul. Saint-Laurent', price: '$10', priceStyle: paid },
+      { hm: '2:00', ampm: 'PM', cat: 'Workshop', title: 'Atelier de céramique pour ados', venue: 'Centre culturel', price: '$5', priceStyle: paid },
+      { hm: '8:00', ampm: 'PM', cat: 'Music', title: 'Soirée jazz', venue: 'Maison de la culture', price: 'FREE', priceStyle: free }
+    ];
+    return { week, events };
+  }
+}
+</script>
+</body>
+</html>

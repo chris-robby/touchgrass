@@ -1,0 +1,11 @@
+__pycache__/
+*.tmp
+# Raw download used by scripts/explore.py (re-downloadable, ~4 MB)
+data/raw/
+node_modules/
+site/dist/
+site/public/data/
+# Generated daily by scripts/build_data.py (rebuilt in GitHub Actions, not committed)
+data/events.json
+data/meta.json
+data/cache/

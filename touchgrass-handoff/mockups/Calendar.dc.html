@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Touchgrass — calendar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&amp;family=Atkinson+Hyperlegible:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EEF2E6}
+a{color:#1F5A3A}a:hover{color:#13281E}
+</style>
+</helmet>
+<div style="position: relative; font-family: 'Atkinson Hyperlegible', system-ui, sans-serif; color: #13281E; background: #EEF2E6; min-height: 1060px">
+  <header style="background: #13281E; color: #EEF2E6">
+    <div style="max-width: 1360px; margin: 0 auto; padding: 18px 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+        <svg width="30" height="26" viewBox="0 0 26 22" fill="none" stroke="#C8F169" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 21C4 14 2 9 1 6"></path><path d="M9 21C9 13 9 6 11 1"></path><path d="M14 21C14 15 16 10 20 7"></path><path d="M19 21C20 17 22 14 25 13"></path></svg>
+        <span style="font-family: 'Young Serif', Georgia, serif; font-size: 30px; color: #C8F169; letter-spacing: -0.01em">touchgrass</span>
+      </a>
+      <nav aria-label="Views" style="display: flex; gap: 4px">
+        <a href="Main.dc.html" style="padding: 12px 14px; color: #B9C8B5; text-decoration: none; font-size: 15px; border-bottom: 3px solid transparent">List</a>
+        <a href="Calendar.dc.html" aria-current="page" style="padding: 12px 14px; color: #C8F169; text-decoration: none; font-weight: 700; font-size: 15px; border-bottom: 3px solid #C8F169">Calendar</a>
+        <a href="Main.dc.html#map" style="padding: 12px 14px; color: #B9C8B5; text-decoration: none; font-size: 15px; border-bottom: 3px solid transparent">Map</a>
+      </nav>
+      <div style="flex: 1 1 260px; display: flex; gap: 12px; justify-content: flex-end; align-items: center; flex-wrap: wrap">
+        <label style="display: flex; align-items: center; gap: 8px; background: #EEF2E6; border-radius: 8px; padding: 0 12px; height: 44px; flex: 0 1 300px; min-width: 200px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4E5F55" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+          <span style="position: absolute; left: -9999px">Search events</span>
+          <input type="search" placeholder="Concerts, parks, workshops…" style="border: 0; outline: none; font: inherit; font-size: 15px; flex: 1; min-width: 0; background: transparent; color: #13281E">
+        </label>
+        <button type="button" aria-label="Switch language" style="height: 44px; padding: 0 14px; border: 1.5px solid #5E7A6A; border-radius: 8px; background: transparent; font: inherit; font-size: 14px; font-weight: 700; color: #EEF2E6">FR / EN</button>
+      </div>
+    </div>
+    <div style="max-width: 1360px; margin: 0 auto; padding: 12px 32px 24px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+      <h1 style="margin: 0 16px 0 0; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 44px; letter-spacing: -0.01em">November <span style="color: #8FA595">2026</span></h1>
+      <button type="button" style="height: 44px; padding: 0 16px; border-radius: 8px; border: 1.5px solid #5E7A6A; background: transparent; font: inherit; font-size: 14px; font-weight: 700; color: #EEF2E6" onClick="{{goToday}}">Today</button>
+      <button type="button" aria-label="Previous month" style="width: 44px; height: 44px; border-radius: 8px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EEF2E6" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button>
+      <button type="button" aria-label="Next month" style="width: 44px; height: 44px; border-radius: 8px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EEF2E6" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+      <div style="flex: 1"></div>
+      <div role="group" aria-label="Price" style="display: flex; gap: 6px">
+        <button type="button" aria-pressed="{{freeOnly}}" style="{{freeBtnStyle}}; height: 44px; padding: 0 16px; border-radius: 8px; font: inherit; font-size: 15px" onClick="{{setFree}}">Free only</button>
+        <button type="button" aria-pressed="{{upTo10}}" style="{{tenBtnStyle}}; height: 44px; padding: 0 16px; border-radius: 8px; font: inherit; font-size: 15px" onClick="{{setTen}}">Up to $10</button>
+      </div>
+      <select aria-label="Category" style="height: 44px; border: 1.5px solid #5E7A6A; border-radius: 8px; padding: 0 10px; font: inherit; font-size: 15px; color: #EEF2E6; background: #13281E"><option>All categories</option><option>Music</option><option>Exhibits</option><option>Family</option><option>Workshops</option><option>Outdoors</option><option>Talks &amp; film</option></select>
+      <select aria-label="Borough" style="height: 44px; border: 1.5px solid #5E7A6A; border-radius: 8px; padding: 0 10px; font: inherit; font-size: 15px; color: #EEF2E6; background: #13281E"><option>All boroughs</option><option>Plateau-Mont-Royal</option><option>Rosemont–La Petite-Patrie</option><option>Ville-Marie</option><option>Verdun</option></select>
+    </div>
+  </header>
+
+  <div style="max-width: 1360px; margin: 0 auto; padding: 28px 32px 48px; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+    <section aria-label="Month grid" style="flex: 999 1 680px; min-width: 0; border: 2px solid #13281E; border-radius: 10px; overflow: hidden; background: #F6F8F1">
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-bottom: 2px solid #13281E">
+        <sc-for list="{{weekdays}}" as="w" hint-placeholder-count="7">
+          <div style="padding: 10px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4E5F55">{{w}}</div>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr))">
+        <sc-for list="{{cells}}" as="c" hint-placeholder-count="42">
+          <div style="{{c.cellStyle}}; min-height: 122px; padding: 6px; border-right: 1px solid #C9D3C1; border-bottom: 1px solid #C9D3C1; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+            <button type="button" aria-label="{{c.aria}}" style="{{c.numStyle}}; align-self: flex-start; width: 34px; height: 34px; box-sizing: border-box; border-radius: 50%; font-family: 'Young Serif', Georgia, serif; font-size: 16px; cursor: pointer" onClick="{{c.pick}}">{{c.label}}</button>
+            <sc-for list="{{c.chips}}" as="ch" hint-placeholder-count="2">
+              <button type="button" style="{{ch.chipStyle}}; display: block; width: 100%; text-align: left; border-radius: 4px; padding: 3px 6px; font: inherit; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer" onClick="{{ch.open}}"><b>{{ch.t}}</b> {{ch.title}}</button>
+            </sc-for>
+            <sc-if value="{{c.hasMore}}" hint-placeholder-val="{{false}}">
+              <button type="button" style="align-self: flex-start; border: 0; background: transparent; padding: 2px 6px; font: inherit; font-size: 12px; font-weight: 700; color: #1F5A3A; text-decoration: underline; cursor: pointer" onClick="{{c.pick}}">{{c.more}}</button>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <aside aria-label="Events on selected day" style="flex: 1 1 340px; min-width: 0">
+      <h2 style="margin: 0; display: flex; flex-direction: column; gap: 4px; padding-bottom: 12px; border-bottom: 2px solid #13281E; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 32px; line-height: 1.1"><span style="font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1F5A3A">{{dayKicker}}</span>{{dayTitle}}</h2>
+      <sc-if value="{{dayEmpty}}" hint-placeholder-val="{{false}}">
+        <p style="margin: 0; padding: 24px 0; color: #4E5F55; font-size: 16px">Nothing listed yet. Good day for a walk on the mountain.</p>
+      </sc-if>
+      <sc-for list="{{dayEvents}}" as="e" hint-placeholder-count="4">
+        <button type="button" style="display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: start; width: 100%; text-align: left; padding: 16px 0; border: 0; border-bottom: 1px solid #C9D3C1; background: transparent; font: inherit; color: #13281E; cursor: pointer" onClick="{{e.open}}">
+          <span style="font-family: 'Young Serif', Georgia, serif; font-size: 20px; line-height: 1.1">{{e.hm}}<span style="display: block; font-family: 'Atkinson Hyperlegible', sans-serif; font-size: 11px; font-weight: 700; color: #4E5F55; margin-top: 3px">{{e.ampm}}</span></span>
+          <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+            <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1F5A3A">{{e.catLabel}}</span>
+            <span style="font-size: 17px; font-weight: 700; line-height: 1.25">{{e.title}}</span>
+            <span style="font-size: 14px; color: #4E5F55">{{e.venue}}</span>
+          </span>
+          <span style="{{e.priceStyle}}; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; padding: 4px 8px; border-radius: 4px; white-space: nowrap">{{e.priceTag}}</span>
+        </button>
+      </sc-for>
+    </aside>
+  </div>
+
+  <sc-if value="{{hasDetail}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(19,40,30,0.55); display: flex; justify-content: center; align-items: flex-start; padding: 80px 24px">
+      <article role="dialog" aria-label="Event details" style="width: 100%; max-width: 640px; background: #EEF2E6; border-radius: 12px; border: 2px solid #13281E; overflow: hidden">
+        <div style="padding: 26px 28px 0; display: flex; gap: 12px; align-items: flex-start">
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; gap: 10px; align-items: center">
+              <span style="{{d.priceStyle}}; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; padding: 4px 9px; border-radius: 4px">{{d.priceTag}}</span>
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1F5A3A">{{d.catLabel}}</span>
+            </div>
+            <h2 style="margin: 0; font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 34px; line-height: 1.1">{{d.title}}</h2>
+          </div>
+          <button type="button" aria-label="Close" style="width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; border: 1.5px solid #13281E; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer" onClick="{{closeDetail}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#13281E" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+        </div>
+        <dl style="margin: 20px 28px 0; display: grid; grid-template-columns: 110px 1fr; font-size: 15px; border-top: 1px solid #C9D3C1">
+          <dt style="padding: 10px 0; border-bottom: 1px solid #C9D3C1; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4E5F55">When</dt><dd style="margin: 0; padding: 10px 0; border-bottom: 1px solid #C9D3C1; font-weight: 700">{{d.when}}</dd>
+          <dt style="padding: 10px 0; border-bottom: 1px solid #C9D3C1; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4E5F55">Where</dt><dd style="margin: 0; padding: 10px 0; border-bottom: 1px solid #C9D3C1; font-weight: 700">{{d.venue}}<br><span style="font-weight: 400; color: #4E5F55">{{d.address}}</span></dd>
+          <dt style="padding: 10px 0; border-bottom: 1px solid #C9D3C1; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4E5F55">Borough</dt><dd style="margin: 0; padding: 10px 0; border-bottom: 1px solid #C9D3C1">{{d.borough}}</dd>
+          <dt style="padding: 10px 0; border-bottom: 1px solid #C9D3C1; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4E5F55">For</dt><dd style="margin: 0; padding: 10px 0; border-bottom: 1px solid #C9D3C1">{{d.audience}}</dd>
+        </dl>
+        <p style="margin: 18px 28px 0; font-size: 16px; line-height: 1.55">{{d.desc}}</p>
+        <div role="img" aria-label="Small map of the venue" style="margin: 18px 28px 0; height: 150px; border-radius: 8px; background: #DCE6D2; position: relative; overflow: hidden">
+          <div style="position: absolute; left: 8%; top: 12%; width: 40%; height: 62%; border-radius: 48% 52% 40% 60%; background: #B7D19E"></div>
+          <div style="position: absolute; left: -10%; top: 66%; width: 130%; height: 36px; background: #BFD3DC; transform: rotate(-8deg)"></div>
+          <span style="position: absolute; left: 50%; top: 30%; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #13281E; border: 2px solid #C8F169"></span>
+        </div>
+        <div style="padding: 22px 28px 28px; display: flex; flex-wrap: wrap; gap: 10px">
+          <a href="#official" style="height: 48px; padding: 0 20px; display: flex; align-items: center; border-radius: 8px; background: #1F5A3A; color: #EEF2E6; text-decoration: none; font-size: 15px; font-weight: 700">Official page</a>
+          <button type="button" style="height: 48px; padding: 0 18px; border-radius: 8px; border: 1.5px solid #13281E; background: transparent; font: inherit; font-size: 15px; font-weight: 700; color: #13281E">Add to calendar (.ics)</button>
+          <button type="button" style="height: 48px; padding: 0 18px; border-radius: 8px; border: 1.5px solid #13281E; background: transparent; font: inherit; font-size: 15px; font-weight: 700; color: #13281E">Google Calendar</button>
+        </div>
+      </article>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1060}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { selected: '2026-11-07', eventId: null, price: 'ten' };
+  }
+  renderVals() {
+    const cats = { music: 'Music', art: 'Exhibit', family: 'Family', workshop: 'Workshop', outdoor: 'Outdoors', talk: 'Talks & film' };
+    const raw = [
+      ['2026-10-31', '5:00 PM', '7:00 PM', "Parade d'Halloween du quartier", 'family', 'Free', 'Parc Laurier', 'Rue Laurier E.', 'Plateau-Mont-Royal', 'All ages', 'A costumed walk through the park with music and treats for kids.'],
+      ['2026-11-01', '1:00 PM', '2:00 PM', 'Heure du conte bilingue', 'family', 'Free', 'Bibliothèque du quartier', '[Address]', 'Rosemont–La Petite-Patrie', 'Kids 3–8 and parents', 'Stories read in French and English, followed by a short craft.'],
+      ['2026-11-01', '7:30 PM', '9:00 PM', 'Concert de musique de chambre', 'music', 'Free', 'Maison de la culture', '[Address]', 'Plateau-Mont-Royal', 'All ages', 'A string quartet plays a short program. Free tickets at the door.'],
+      ['2026-11-03', '6:00 PM', '8:00 PM', 'Atelier de linogravure', 'workshop', '$5', 'Centre communautaire', '[Address]', 'Verdun', 'Adults', 'Carve and print your own design. Materials included.'],
+      ['2026-11-04', '12:00 PM', '1:00 PM', 'Midi-conférence : histoire du métro', 'talk', 'Free', 'Bibliothèque centrale', '[Address]', 'Ville-Marie', 'Adults', 'A lunchtime talk on how the métro network was built.'],
+      ['2026-11-05', '10:00 AM', '6:00 PM', 'Exposition photo : Montréal la nuit', 'art', 'Free', 'Galerie municipale', '[Address]', 'Ville-Marie', 'All ages', 'Night photography of the city by local photographers.'],
+      ['2026-11-06', '7:00 PM', '9:30 PM', 'Projection : courts métrages québécois', 'talk', 'Free', 'Maison de la culture', '[Address]', 'Rosemont–La Petite-Patrie', 'Adults', 'A selection of recent Québec short films, followed by a Q&A.'],
+      ['2026-11-07', '9:30 AM', '10:30 AM', 'Yoga au parc', 'outdoor', 'Free', 'Parc La Fontaine', 'Av. Calixa-Lavallée', 'Plateau-Mont-Royal', 'Adults, all levels', 'Bring a mat and dress warmly. Cancelled if it rains.'],
+      ['2026-11-07', '10:30 AM', '11:30 AM', 'Heure du conte', 'family', 'Free', 'Bibliothèque du quartier', '[Address]', 'Rosemont–La Petite-Patrie', 'Kids 3–8', 'Picture-book stories for young children.'],
+      ['2026-11-07', '1:00 PM', '3:00 PM', 'Visite guidée des murales', 'outdoor', '$10', 'Départ : boul. Saint-Laurent', '[Meeting point]', 'Plateau-Mont-Royal', 'All ages', 'A walking tour of the neighbourhood murals with a local guide.'],
+      ['2026-11-07', '2:00 PM', '4:00 PM', 'Atelier de céramique pour ados', 'workshop', '$5', 'Centre culturel', '[Address]', 'Verdun', 'Teens 12–17', 'Hand-building basics. Pieces are fired and ready a week later.'],
+      ['2026-11-07', '8:00 PM', '10:00 PM', 'Soirée jazz', 'music', 'Free', 'Maison de la culture', '[Address]', 'Plateau-Mont-Royal', 'All ages', 'A local jazz trio. Arrive early, seating is limited.'],
+      ['2026-11-08', '11:00 AM', '4:00 PM', "Marché d'artisans", 'art', 'Free', 'Salle communautaire', '[Address]', 'Rosemont–La Petite-Patrie', 'All ages', 'Local makers selling crafts. Entry is free.'],
+      ['2026-11-08', '3:00 PM', '4:00 PM', 'Concert de chorale', 'music', 'Free', 'Église du quartier', '[Address]', 'Ville-Marie', 'All ages', 'A community choir sings a mixed program.'],
+      ['2026-11-10', '7:00 PM', '8:30 PM', "Conférence : jardinage d'hiver", 'talk', 'Free', 'Bibliothèque du quartier', '[Address]', 'Verdun', 'Adults', 'How to keep herbs and greens growing indoors through winter.'],
+      ['2026-11-12', '6:30 PM', '9:00 PM', 'Vernissage collectif', 'art', 'Free', 'Galerie municipale', '[Address]', 'Ville-Marie', 'Adults', 'Opening night of a group show by emerging artists.'],
+      ['2026-11-14', '10:00 AM', '12:00 PM', 'Randonnée sur le mont Royal', 'outdoor', 'Free', 'Chalet du Mont-Royal', '[Meeting point]', 'Ville-Marie', 'All ages', 'A guided walk to the lookout. Good shoes recommended.'],
+      ['2026-11-14', '2:00 PM', '4:00 PM', 'Atelier de BD', 'workshop', 'Free', 'Bibliothèque du quartier', '[Address]', 'Plateau-Mont-Royal', 'Kids 9–12', 'Learn to draw a short comic strip.'],
+      ['2026-11-14', '4:00 PM', '5:00 PM', 'Spectacle de cirque jeunesse', 'family', '$5', 'Centre culturel', '[Address]', 'Verdun', 'Families', 'A short acrobatics show by circus students.'],
+      ['2026-11-15', '1:00 PM', '5:00 PM', 'Expo : design québécois', 'art', 'Free', 'Galerie municipale', '[Address]', 'Ville-Marie', 'All ages', 'Furniture and objects by Québec designers.'],
+      ['2026-11-19', '7:00 PM', '9:00 PM', 'Ciné-club', 'talk', 'Free', 'Maison de la culture', '[Address]', 'Rosemont–La Petite-Patrie', 'Adults', 'A classic film screening and discussion.'],
+      ['2026-11-21', '10:00 AM', '2:00 PM', 'Fête de quartier', 'family', 'Free', 'Parc du quartier', '[Address]', 'Verdun', 'All ages', 'Games, music and hot drinks for the whole family.'],
+      ['2026-11-21', '7:30 PM', '9:00 PM', 'Concert de guitare classique', 'music', 'Free', 'Maison de la culture', '[Address]', 'Plateau-Mont-Royal', 'All ages', 'Solo classical guitar recital.'],
+      ['2026-11-22', '11:00 AM', '1:00 PM', 'Atelier de tricot', 'workshop', 'Free', 'Bibliothèque du quartier', '[Address]', 'Rosemont–La Petite-Patrie', 'Adults', 'Beginners welcome. Needles and yarn provided.'],
+      ['2026-11-26', '6:00 PM', '7:30 PM', 'Lecture de poésie', 'talk', 'Free', 'Librairie de quartier', '[Address]', 'Plateau-Mont-Royal', 'Adults', 'Local poets read new work.'],
+      ['2026-11-28', '12:00 PM', '6:00 PM', 'Marché de Noël', 'art', 'Free', 'Place publique', '[Address]', 'Ville-Marie', 'All ages', 'Holiday market with local crafts and food stalls.'],
+      ['2026-11-28', '4:30 PM', '5:30 PM', 'Illumination du sapin', 'outdoor', 'Free', 'Place publique', '[Address]', 'Ville-Marie', 'All ages', 'Tree lighting with a short choir performance.'],
+      ['2026-11-28', '7:00 PM', '8:00 PM', 'Chorale de Noël', 'music', 'Free', 'Église du quartier', '[Address]', 'Ville-Marie', 'All ages', 'Seasonal songs by a community choir.'],
+      ['2026-11-29', '2:00 PM', '4:00 PM', 'Patinage libre', 'outdoor', 'Free', 'Patinoire du parc', '[Address]', 'Plateau-Mont-Royal', 'All ages', 'Open skating, weather permitting. Skate rental not included.']
+    ];
+    const freeOnly = this.state.price === 'free';
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const dows = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const all = raw.map((r, i) => {
+      const free = r[5] === 'Free';
+      const parts = r[1].split(' ');
+      return {
+        id: i, date: r[0], title: r[3], free,
+        venue: r[6], address: r[7], borough: r[8], audience: r[9], desc: r[10],
+        catLabel: cats[r[4]], hm: parts[0], ampm: parts[1],
+        short: parts[0].replace(':00', '') + (parts[1] === 'AM' ? 'a' : 'p'),
+        priceTag: free ? 'FREE' : r[5],
+        priceStyle: free ? 'background:#C8F169;color:#13281E' : 'border:1.5px solid #13281E;color:#13281E',
+        time: r[1] + ' – ' + r[2]
+      };
+    }).filter(e => !freeOnly || e.free);
+    const open = (e) => () => this.setState({ eventId: e.id, selected: e.date });
+    const byDay = {};
+    all.forEach(e => { (byDay[e.date] = byDay[e.date] || []).push(e); });
+    const cells = [];
+    const start = Date.UTC(2026, 9, 26);
+    for (let i = 0; i < 42; i++) {
+      const dt = new Date(start + i * 86400000);
+      const iso = dt.toISOString().slice(0, 10);
+      const evs = byDay[iso] || [];
+      const inMonth = dt.getUTCMonth() === 10;
+      const isToday = iso === '2026-10-31';
+      const isSel = iso === this.state.selected;
+      cells.push({
+        label: dt.getUTCDate(),
+        aria: dows[dt.getUTCDay()] + ' ' + months[dt.getUTCMonth()] + ' ' + dt.getUTCDate() + ', ' + evs.length + ' events',
+        cellStyle: isSel ? 'background:#E1EBD3' : (inMonth ? 'background:#F6F8F1' : 'background:#E8EDE0'),
+        numStyle: isSel ? 'background:#C8F169;color:#13281E;border:2px solid #13281E' : (isToday ? 'background:transparent;color:#13281E;border:2px solid #1F5A3A' : (inMonth ? 'background:transparent;color:#13281E;border:0' : 'background:transparent;color:#6A7A70;border:0')),
+        chips: evs.slice(0, 2).map(e => ({
+          chipStyle: e.free ? 'background:#C8F169;color:#13281E;border:0' : 'background:transparent;color:#13281E;border:1.5px solid #13281E',
+          t: e.short, title: e.title, open: open(e)
+        })),
+        hasMore: evs.length > 2,
+        more: '+' + (evs.length - 2) + ' more',
+        pick: () => this.setState({ selected: iso })
+      });
+    }
+    const sd = new Date(this.state.selected + 'T12:00:00Z');
+    const dayEvents = (byDay[this.state.selected] || []).map(e => ({ ...e, open: open(e) }));
+    const det = this.state.eventId === null ? null : all.find(e => e.id === this.state.eventId);
+    const d = det ? { ...det, when: dows[new Date(det.date + 'T12:00:00Z').getUTCDay()] + ', ' + months[+det.date.slice(5, 7) - 1] + ' ' + (+det.date.slice(8)) + ' · ' + det.time } : {};
+    const on = 'border:0;background:#C8F169;color:#13281E;font-weight:700';
+    const off = 'border:1.5px solid #5E7A6A;background:transparent;color:#EEF2E6;font-weight:400';
+    return {
+      weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      cells,
+      dayKicker: dayEvents.length + (dayEvents.length === 1 ? ' event' : ' events'),
+      dayTitle: dows[sd.getUTCDay()] + ', ' + months[sd.getUTCMonth()] + ' ' + sd.getUTCDate(),
+      dayEvents,
+      dayEmpty: dayEvents.length === 0,
+      hasDetail: !!det,
+      d,
+      closeDetail: () => this.setState({ eventId: null }),
+      goToday: () => this.setState({ selected: '2026-10-31', eventId: null }),
+      freeOnly: freeOnly ? 'true' : 'false',
+      upTo10: freeOnly ? 'false' : 'true',
+      freeBtnStyle: freeOnly ? on : off,
+      tenBtnStyle: freeOnly ? off : on,
+      setFree: () => this.setState({ price: 'free', eventId: null }),
+      setTen: () => this.setState({ price: 'ten', eventId: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

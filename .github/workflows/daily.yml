@@ -1,0 +1,80 @@
+# Rebuilds the event data and the site every morning, then deploys to GitHub Pages.
+#
+# If any step fails (download error, zero events, count dropped by half, tests,
+# build), nothing is deployed and the live site keeps yesterday's version.
+# GitHub emails the repo owner when a scheduled run fails.
+name: Daily build & deploy
+
+on:
+  schedule:
+    # 10:00 UTC = 5–6 a.m. in Montréal. The city refreshes its dataset around midnight.
+    - cron: "0 10 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch: # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      # The page-details cache makes the daily run take seconds instead of minutes,
+      # and the previous meta.json lets build_data.py detect a sudden drop in events.
+      # Cache keys can't be overwritten, so each run saves a new one and the next
+      # run restores the most recent.
+      - name: Restore data cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/cache
+            data/meta.json
+          key: data-${{ github.run_id }}
+          restore-keys: data-
+
+      - name: Test the pipeline
+        run: python -m unittest discover tests
+
+      - name: Build events data
+        run: python scripts/build_data.py
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Build site
+        working-directory: site
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

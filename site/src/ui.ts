@@ -1,0 +1,259 @@
+// Shared page pieces: header, footer, mobile bottom nav, filter bar, event rows.
+import { Ev, Filters, filterQuery, hasActiveFilters, loadMeta } from "./data";
+import { fmtUpdated, timeColumn } from "./format";
+import { categoryLabel, categorySlugs, lang, setLang, t } from "./i18n";
+
+export type Page = "list" | "calendar" | "map" | "about";
+
+export function esc(s: string | null | undefined): string {
+  return (s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+  );
+}
+
+export const icons = {
+  logo: `<svg width="30" height="26" viewBox="0 0 26 22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 21C4 14 2 9 1 6"/><path d="M9 21C9 13 9 6 11 1"/><path d="M14 21C14 15 16 10 20 7"/><path d="M19 21C20 17 22 14 25 13"/></svg>`,
+  search: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>`,
+  prev: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>`,
+  next: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`,
+  close: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  list: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>`,
+  calendar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>`,
+  pin: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
+};
+
+const PAGES: { page: Page; file: string; label: () => string; icon: string }[] = [
+  { page: "list", file: "index.html", label: () => t("nav.list"), icon: icons.list },
+  { page: "calendar", file: "calendar.html", label: () => t("nav.calendar"), icon: icons.calendar },
+  { page: "map", file: "map.html", label: () => t("nav.map"), icon: icons.pin },
+];
+
+export interface Shell {
+  headerExtra: HTMLElement; // inside the dark band, under the top bar
+  filtersSlot: HTMLElement;
+  main: HTMLElement;
+}
+
+/** Builds the page frame. The language button reloads the page in the other language. */
+export function renderShell(page: Page): Shell {
+  const navLinks = (cls: string, withIcons: boolean) =>
+    PAGES.map((p) => `<a class="${cls}" data-nav="${p.file}" href="${p.file}"${p.page === page ? ' aria-current="page"' : ""}>${withIcons ? p.icon : ""}${esc(p.label())}</a>`).join("");
+
+  document.body.innerHTML = `
+    <a class="skip-link" href="#main">${lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
+    <header class="site-header">
+      <div class="wrap topbar">
+        <a class="logo" href="index.html" data-nav="index.html">${icons.logo}<span>touchgrass</span></a>
+        <nav class="views" aria-label="${t("nav.views")}">${navLinks("view-link", false)}</nav>
+        <div class="topbar-end">
+          <button type="button" class="btn-dark lang-btn" aria-label="${t("lang.switch")}">
+            <span${lang === "fr" ? ' class="on"' : ""}>FR</span> / <span${lang === "en" ? ' class="on"' : ""}>EN</span>
+          </button>
+        </div>
+      </div>
+      <div class="header-extra"></div>
+    </header>
+    <div class="filters-slot"></div>
+    <main id="main" class="wrap" tabindex="-1"></main>
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <span class="footer-logo">touchgrass</span>
+        <span>${esc(t("footer.data"))}</span>
+        <span class="footer-updated"></span>
+        <a href="about.html">${esc(t("footer.about"))}</a>
+      </div>
+    </footer>
+    <nav class="bottom-nav" aria-label="${t("nav.views")}">${navLinks("bottom-link", true)}</nav>
+  `;
+  document.body.dataset.page = page;
+  // The HTML files carry French titles; set them in the visitor's language.
+  const titles: Record<Page, string> = {
+    list: t("hero.title").replace(/\.$/, ""), calendar: t("nav.calendar"), map: t("nav.map"), about: t("about.title"),
+  };
+  document.title = `${titles[page]} — touchgrass`;
+
+  document.querySelector(".lang-btn")!.addEventListener("click", () => {
+    setLang(lang === "fr" ? "en" : "fr");
+    location.reload();
+  });
+
+  loadMeta().then((meta) => {
+    if (meta) document.querySelector(".footer-updated")!.textContent =
+      `${t("footer.updated")}${lang === "fr" ? " : " : ": "}${fmtUpdated(meta.built_at)}`;
+  });
+
+  return {
+    headerExtra: document.querySelector(".header-extra")!,
+    filtersSlot: document.querySelector(".filters-slot")!,
+    main: document.querySelector("main")!,
+  };
+}
+
+/** Keep the List/Calendar/Map links carrying the current filters. */
+export function updateNavLinks(f: Filters): void {
+  const qs = filterQuery(f);
+  document.querySelectorAll<HTMLAnchorElement>("[data-nav]").forEach((a) => {
+    a.href = a.dataset.nav + qs;
+  });
+}
+
+// ---------------------------------------------------------------- filter bar
+
+export interface FilterBarOptions {
+  when: boolean;
+  search: boolean;
+  boroughs: string[];
+}
+
+export const NO_FILTERS: Filters = { q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false };
+
+/**
+ * Renders the filter controls into `slot`. The page owns the filter state:
+ * `get` reads it, and `onPatch` receives only what changed.
+ */
+export function renderFilterBar(
+  slot: HTMLElement, get: () => Filters, opts: FilterBarOptions,
+  onPatch: (patch: Partial<Filters>) => void,
+): void {
+  const f = get();
+  const whenBtn = (value: string, key: Parameters<typeof t>[0]) =>
+    `<button type="button" class="chip-btn" data-when="${value}" aria-pressed="${f.when === value}">${esc(t(key))}</button>`;
+  const cats = [...categorySlugs].sort((a, b) => categoryLabel(a).localeCompare(categoryLabel(b), lang));
+
+  slot.innerHTML = `
+    <section class="filters" aria-label="${t("filters")}">
+      <div class="wrap filters-inner">
+        ${opts.search ? `
+          <label class="search search-inline">${icons.search}
+            <span class="sr-only">${t("search.label")}</span>
+            <input type="search" name="q" value="${esc(f.q)}" placeholder="${esc(t("search.placeholder"))}">
+          </label>` : ""}
+        ${opts.when ? `
+          <div class="btn-group" role="group" aria-label="${t("when")}">
+            ${whenBtn("today", "when.today")}${whenBtn("weekend", "when.weekend")}
+            ${whenBtn("week", "when.week")}${whenBtn("custom", "when.custom")}
+          </div>
+          <div class="date-range"${f.when === "custom" ? "" : " hidden"}>
+            <label>${t("when.from")} <input type="date" name="from" value="${f.from}"></label>
+            <label>${t("when.to")} <input type="date" name="to" value="${f.to}"></label>
+          </div>
+          <span class="divider" aria-hidden="true"></span>` : ""}
+        <button type="button" class="chip-btn" data-dropin aria-pressed="${f.dropin}">${esc(t("dropin"))}</button>
+        <span class="divider" aria-hidden="true"></span>
+        <label class="select-label"><span class="select-caption">${t("category")}</span>
+          <select name="cat">
+            <option value="">${t("category.all")}</option>
+            ${cats.map((c) => `<option value="${c}"${c === f.cat ? " selected" : ""}>${esc(categoryLabel(c))}</option>`).join("")}
+          </select>
+        </label>
+        <label class="select-label"><span class="select-caption">${t("borough")}</span>
+          <select name="boro">
+            <option value="">${t("borough.all")}</option>
+            ${opts.boroughs.map((b) => `<option${b === f.boro ? " selected" : ""}>${esc(b)}</option>`).join("")}
+          </select>
+        </label>
+        <button type="button" class="link-btn clear-btn"${hasActiveFilters(f) ? "" : " hidden"}>${t("clearFilters")}</button>
+      </div>
+    </section>`;
+
+  const root = slot.querySelector(".filters")!;
+  const emit = (patch: Partial<Filters>) => {
+    onPatch(patch);
+    root.querySelector<HTMLElement>(".clear-btn")!.hidden = !hasActiveFilters(get());
+  };
+
+  root.querySelectorAll<HTMLButtonElement>("[data-when]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const when = (get().when === btn.dataset.when ? "" : btn.dataset.when) as Filters["when"];
+      root.querySelectorAll<HTMLButtonElement>("[data-when]").forEach((b) =>
+        b.setAttribute("aria-pressed", String(b.dataset.when === when)));
+      root.querySelector<HTMLElement>(".date-range")!.hidden = when !== "custom";
+      emit({ when });
+    }));
+
+  root.querySelectorAll<HTMLInputElement>('input[type="date"]').forEach((input) =>
+    input.addEventListener("change", () => emit({ [input.name]: input.value })));
+
+  const dropin = root.querySelector<HTMLButtonElement>("[data-dropin]")!;
+  dropin.addEventListener("click", () => {
+    const on = !get().dropin;
+    dropin.setAttribute("aria-pressed", String(on));
+    emit({ dropin: on });
+  });
+
+  root.querySelectorAll<HTMLSelectElement>("select").forEach((sel) =>
+    sel.addEventListener("change", () => emit({ [sel.name]: sel.value })));
+
+  const search = root.querySelector<HTMLInputElement>('input[name="q"]');
+  if (search) bindSearch(search, emit);
+
+  root.querySelector(".clear-btn")!.addEventListener("click", () => {
+    onPatch(NO_FILTERS);
+    renderFilterBar(slot, get, opts, onPatch);
+  });
+}
+
+/** Debounced search input, so the list doesn't re-render on every keystroke. */
+export function bindSearch(input: HTMLInputElement, emit: (patch: Partial<Filters>) => void): void {
+  let timer = 0;
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = window.setTimeout(() => emit({ q: input.value.trim() }), 150);
+  });
+}
+
+// ---------------------------------------------------------------- event rows
+
+export function tagsHtml(e: Ev): string {
+  let html = `<span class="tag tag-free">${t("tag.free")}</span>`;
+  if (e.registration === "required") {
+    html += `<span class="tag tag-outline" title="${t("tag.required.long")}"><span aria-hidden="true">${t("tag.required")}</span><span class="sr-only">${t("tag.required.long")}</span></span>`;
+  } else if (e.registration === "ticket") {
+    html += `<span class="tag tag-outline" title="${t("tag.ticket.long")}"><span aria-hidden="true">${t("tag.ticket")}</span><span class="sr-only">${t("tag.ticket.long")}</span></span>`;
+  }
+  return html;
+}
+
+export function venueLine(e: Ev, withBorough: boolean): string {
+  const parts = [e.venue ?? (e.format === "online" ? t("online") : null)];
+  if (e.format === "online" && e.venue) parts.push(t("online"));
+  if (withBorough) parts.push(e.borough);
+  return parts.filter(Boolean).map(esc).join(" · ");
+}
+
+/** Link to this page with the event open (so rows work with middle-click / share). */
+export function eventHref(id: string): string {
+  const p = new URLSearchParams(location.search);
+  p.set("e", id);
+  return `?${p.toString()}`;
+}
+
+export function eventRowHtml(e: Ev, compact = false): string {
+  const tc = timeColumn(e);
+  return `
+    <a class="ev-row${compact ? " compact" : ""}" href="${eventHref(e.id)}" data-id="${e.id}">
+      <span class="ev-time">
+        ${tc.kicker ? `<span class="ev-time-kicker">${esc(tc.kicker)}</span>` : ""}
+        <span class="ev-time-main">${esc(tc.main)}</span>
+        ${tc.sub ? `<span class="ev-time-sub">${esc(tc.sub)}</span>` : ""}
+      </span>
+      <span class="ev-body">
+        <span class="ev-cat">${esc(categoryLabel(e.category))}</span>
+        <span class="ev-title">${esc(e.title)}</span>
+        <span class="ev-venue">${venueLine(e, !compact)}</span>
+      </span>
+      <span class="ev-tags">${tagsHtml(e)}</span>
+    </a>`;
+}
+
+/** Clicking any [data-id] inside root opens that event (keeps normal link behaviour for modifier keys). */
+export function onEventClick(root: HTMLElement, open: (id: string) => void): void {
+  root.addEventListener("click", (ev) => {
+    const target = (ev.target as HTMLElement).closest<HTMLElement>("[data-id]");
+    if (!target || !root.contains(target)) return;
+    const me = ev as MouseEvent;
+    if (me.ctrlKey || me.metaKey || me.shiftKey || me.button === 1) return;
+    ev.preventDefault();
+    open(target.dataset.id!);
+  });
+}
