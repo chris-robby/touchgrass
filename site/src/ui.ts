@@ -77,6 +77,9 @@ export function renderShell(page: Page): Shell {
     location.reload();
   });
 
+  registerServiceWorker();
+  showOfflineNotice();
+
   loadMeta().then((meta) => {
     if (meta) document.querySelector(".footer-updated")!.textContent =
       `${t("footer.updated")}${lang === "fr" ? " : " : ": "}${fmtUpdated(meta.built_at)}`;
@@ -87,6 +90,27 @@ export function renderShell(page: Page): Shell {
     filtersSlot: document.querySelector(".filters-slot")!,
     main: document.querySelector("main")!,
   };
+}
+
+/** Makes the site installable and usable offline (production build only). */
+function registerServiceWorker(): void {
+  if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register("sw.js").catch((err) => console.warn("Service worker:", err));
+}
+
+/** A small band under the header while the phone is offline. */
+function showOfflineNotice(): void {
+  const band = document.createElement("p");
+  band.className = "offline-band";
+  band.setAttribute("role", "status");
+  band.textContent = lang === "fr"
+    ? "Hors ligne : affichage des dernières activités enregistrées."
+    : "Offline: showing the last saved listings.";
+  const update = () => { band.hidden = navigator.onLine; };
+  update();
+  document.querySelector(".site-header")!.after(band);
+  window.addEventListener("online", update);
+  window.addEventListener("offline", update);
 }
 
 /** Keep the List/Calendar/Map links carrying the current filters. */

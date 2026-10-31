@@ -65,7 +65,7 @@ button { cursor: pointer; }
 
 /* ------------------------------------------------------------ header */
 
-.site-header { background: var(--ink); color: var(--paper); }
+.site-header { background: var(--ink); color: var(--paper); padding-top: env(safe-area-inset-top); }
 
 .topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding-top: 18px; padding-bottom: 18px; }
 
@@ -111,6 +111,12 @@ button { cursor: pointer; }
 .search-hero { flex: 1 1 360px; height: 56px; }
 .search-inline { height: 44px; flex: 0 1 300px; min-width: 200px; border: 1.5px solid var(--ink); padding: 0 12px; }
 .search-inline:focus-within { outline-color: var(--forest); }
+
+.offline-band {
+  margin: 0; padding: 8px var(--gutter); background: var(--lime); color: var(--ink);
+  font-size: 14px; font-weight: 700; text-align: center;
+}
+.offline-band[hidden] { display: none; }
 
 /* ------------------------------------------------------------ filters */
 

@@ -105,6 +105,12 @@ tiles, no API key). Design follows `touchgrass-handoff/DESIGN.md`.
   their *last* day ("Until Dec 6"), so they don't bury each day's own events. In the
   calendar they show on every day they run, after the timed events, as dashed chips.
   Free events are lime chips, ≤ $10 ones outlined (as in the design).
+- **Installable app (PWA)**: `public/manifest.webmanifest` + `public/sw.js`. On a phone,
+  "Add to Home Screen" opens it full screen like an app. The service worker saves the
+  site and the latest listings, so it opens instantly and works offline (showing the last
+  saved data, with a notice). After each build, `scripts/sw-precache.mjs` writes the list
+  of built files and a version id into `dist/sw.js`; a new deploy replaces the old copy.
+  Icons are drawn by `scripts/make_icons.py` (needs Pillow).
 - Why no calendar library: a month grid with chips is ~150 lines; FullCalendar would
   add far more code than it saves here.
 - Map tiles come from openstreetmap.org, which is fine for a small site. If traffic

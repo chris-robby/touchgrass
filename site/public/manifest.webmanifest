@@ -1,0 +1,21 @@
+{
+  "name": "touchgrass — gratuit à Montréal",
+  "short_name": "touchgrass",
+  "description": "Activités gratuites ou à 10 $ et moins à Montréal, mises à jour chaque matin.",
+  "lang": "fr-CA",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EEF2E6",
+  "theme_color": "#13281E",
+  "categories": ["events", "lifestyle", "travel"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Calendrier", "url": "calendar.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Carte", "url": "map.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -5,7 +5,7 @@
   "scripts": {
     "data": "node scripts/copy-data.mjs",
     "dev": "npm run data && vite",
-    "build": "npm run data && tsc --noEmit && vite build",
+    "build": "npm run data && tsc --noEmit && vite build && node scripts/sw-precache.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
