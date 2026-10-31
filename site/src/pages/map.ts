@@ -2,6 +2,7 @@
 import "../styles.css";
 import { dateRange, Ev, Filters, filtersToParams, loadEvents, matches, readFilters, setParams } from "../data";
 import { openDetail, syncDetail } from "../detail";
+import { refreshForYou, setupForYou } from "../forYou";
 import { countLabel, t } from "../i18n";
 import { createMap, venueLayer } from "../map";
 import { renderFilterBar, renderShell, updateNavLinks } from "../ui";
@@ -31,14 +32,17 @@ function start(events: Ev[]): void {
   const map = createMap(shell.main.querySelector<HTMLElement>(".map-full")!);
   const pins = venueLayer(map, (id) => openDetail(byId.get(id)!));
 
-  renderFilterBar(shell.filtersSlot, () => f, { when: true, search: true, boroughs }, (patch) => {
+  const onPatch = (patch: Partial<Filters>) => {
     f = { ...f, ...patch };
     setParams(filtersToParams(f));
     updateNavLinks(f);
     render();
-  });
+  };
+  renderFilterBar(shell.filtersSlot, () => f, { when: true, search: true, boroughs }, onPatch);
+  setupForYou({ events, boroughs, getFilters: () => f, onPatch });
 
   function render(): void {
+    refreshForYou();
     const now = Date.now();
     const range = dateRange(f);
     const filtered = events.filter((e) => e.endMs >= now && matches(e, f, range));

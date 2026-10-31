@@ -104,8 +104,17 @@ tiles, no API key). Design follows `touchgrass-handoff/DESIGN.md`.
 | `map.html` | Full map, one pin per venue with a count; tap → that venue's events |
 | `about.html` | What the site is + Ville de Montréal attribution |
 
+- **"For you" preferences** (`src/prefs.ts`, `src/forYou.ts`): on the first visit a panel
+  asks what the visitor is into — 8 interest groups (each covering several of the 24
+  categories), who it's for (adults / kids & family / teens / seniors), boroughs, free
+  only — with a live count. Answers are saved in the browser (localStorage) and narrow
+  the list, calendar and map. A bar above the results shows what's applied, with
+  "Edit" and "See everything" (`?all=1`). The filter button inside the search bar
+  reopens the panel; its badge shows how many preferences are on. Online events stay
+  visible whatever boroughs are chosen.
 - **Filters** (date, free only, drop-in only, 24 categories, borough, search) live in the URL, so
-  any view can be shared; the List/Calendar/Map links keep them.
+  any view can be shared; the List/Calendar/Map links keep them. They stack on top of
+  the preferences.
 - **Event detail** is a `<dialog>` (bottom sheet on phones) with price, the official page
   link, a **"Learn more"** list (organizer website / Facebook / phone found in the data,
   Google Maps directions, a Google search) and the source, plus a `.ics` download and a

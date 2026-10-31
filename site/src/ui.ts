@@ -19,6 +19,7 @@ export const icons = {
   close: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
   list: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>`,
   calendar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>`,
+  sliders: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>`,
   pin: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
 };
 
@@ -121,6 +122,19 @@ export function updateNavLinks(f: Filters): void {
   });
 }
 
+/** Search field with the "my preferences" filter button inside it (see forYou.ts). */
+export function searchFieldHtml(value: string, cls: string): string {
+  const prefsLabel = lang === "fr" ? "Mes préférences" : "My preferences";
+  return `
+    <div class="search ${cls}">
+      <label class="search-field">${icons.search}
+        <span class="sr-only">${t("search.label")}</span>
+        <input type="search" name="q" value="${esc(value)}" placeholder="${esc(t("search.placeholder"))}">
+      </label>
+      <button type="button" class="search-filter-btn" aria-haspopup="dialog" aria-label="${prefsLabel}" title="${prefsLabel}">${icons.sliders}<span class="filter-badge" hidden></span></button>
+    </div>`;
+}
+
 // ---------------------------------------------------------------- filter bar
 
 export interface FilterBarOptions {
@@ -130,7 +144,7 @@ export interface FilterBarOptions {
 }
 
 export const NO_FILTERS: Filters = {
-  q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false, free: false,
+  q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false, free: false, all: false,
 };
 
 /**
@@ -149,11 +163,7 @@ export function renderFilterBar(
   slot.innerHTML = `
     <section class="filters" aria-label="${t("filters")}">
       <div class="wrap filters-inner">
-        ${opts.search ? `
-          <label class="search search-inline">${icons.search}
-            <span class="sr-only">${t("search.label")}</span>
-            <input type="search" name="q" value="${esc(f.q)}" placeholder="${esc(t("search.placeholder"))}">
-          </label>` : ""}
+        ${opts.search ? searchFieldHtml(f.q, "search-inline") : ""}
         ${opts.when ? `
           <div class="btn-group" role="group" aria-label="${t("when")}">
             ${whenBtn("today", "when.today")}${whenBtn("weekend", "when.weekend")}

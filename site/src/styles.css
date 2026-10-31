@@ -103,13 +103,28 @@ button { cursor: pointer; }
 .hero p { margin: 16px 0 0; font-size: 18px; color: var(--muted-on-dark); max-width: 600px; }
 
 .search {
-  display: flex; align-items: center; gap: 10px; background: var(--paper); color: var(--muted);
-  border-radius: 8px; padding: 0 16px;
+  display: flex; align-items: center; gap: 6px; background: var(--paper); color: var(--muted);
+  border-radius: 8px; padding: 0 6px 0 16px;
 }
+.search-field { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 100%; }
 .search input { border: 0; outline: none; background: transparent; color: var(--ink); flex: 1; min-width: 0; font-size: 16px; }
+
+/* "My preferences" button inside the search field. */
+.search-filter-btn {
+  position: relative; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 6px;
+  border: 0; border-left: 1px solid var(--line); background: transparent; color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+}
+.search-filter-btn:hover { background: var(--paper-dim); }
+.filter-badge {
+  position: absolute; top: 3px; right: 2px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+  background: var(--forest); color: var(--paper); font-size: 11px; font-weight: 700; line-height: 17px; text-align: center;
+}
+.filter-badge[hidden] { display: none; }
 .search:focus-within { outline: 3px solid var(--lime); outline-offset: 2px; }
 .search-hero { flex: 1 1 360px; height: 56px; }
-.search-inline { height: 44px; flex: 0 1 300px; min-width: 200px; border: 1.5px solid var(--ink); padding: 0 12px; }
+.search-inline { height: 44px; flex: 0 1 320px; min-width: 220px; border: 1.5px solid var(--ink); padding: 0 4px 0 12px; }
+.search-inline .search-filter-btn { height: 36px; width: 38px; }
 .search-inline:focus-within { outline-color: var(--forest); }
 
 .offline-band {
@@ -117,6 +132,13 @@ button { cursor: pointer; }
   font-size: 14px; font-weight: 700; text-align: center;
 }
 .offline-band[hidden] { display: none; }
+
+/* "For you" bar: what the saved preferences are filtering. */
+.foryou-bar { background: var(--selected); border-bottom: 1px solid var(--line); }
+.foryou-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; padding-top: 6px; padding-bottom: 6px; }
+.foryou-kicker { color: var(--forest); }
+.foryou-summary { font-size: 15px; font-weight: 700; }
+.foryou-bar .link-btn { min-height: 40px; padding: 6px 4px; }
 
 /* ------------------------------------------------------------ filters */
 
@@ -360,6 +382,33 @@ dialog.detail::backdrop { background: rgba(19, 40, 30, 0.55); }
 .learn-more a[data-kind="phone"]::after { content: "☎"; }
 .source-line { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 
+/* ------------------------------------------------------------ preferences dialog */
+
+dialog.prefs {
+  width: min(680px, calc(100% - 48px)); max-height: calc(100% - 64px); margin: 32px auto auto;
+  padding: 0; border: 2px solid var(--ink); border-radius: 12px; background: var(--paper); color: var(--ink);
+  overflow-y: auto;
+}
+dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
+.prefs-inner { padding: 24px 28px 0; display: flex; flex-direction: column; gap: 16px; }
+.prefs-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+.prefs-kicker { margin: 0 0 4px; color: var(--forest); }
+.prefs h2 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.1; }
+.prefs-intro { margin: 0; color: var(--muted); }
+.prefs fieldset { margin: 0; padding: 14px 0 0; border: 0; border-top: 2px solid var(--ink); }
+.prefs legend {
+  float: left; width: 100%; padding: 0; margin-bottom: 10px;
+  font-family: var(--serif); font-size: 21px;
+}
+.prefs-hint { clear: both; margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+.chips-wrap { clear: both; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips-wrap .chip-btn { height: auto; min-height: 44px; white-space: normal; text-align: left; }
+.prefs-actions {
+  position: sticky; bottom: 0; display: flex; flex-wrap: wrap; gap: 10px;
+  margin: 0 -28px; padding: 16px 28px 20px; background: var(--paper); border-top: 1px solid var(--line);
+}
+.prefs-actions .btn-primary { flex: 1 1 220px; }
+
 /* ------------------------------------------------------------ footer, about */
 
 .site-footer { background: var(--ink); color: var(--muted-on-dark); }
@@ -454,6 +503,18 @@ dialog.detail::backdrop { background: rgba(19, 40, 30, 0.55); }
   .panel-heading .kicker { color: var(--muted); font-size: 12px; }
 
   .map-full { height: calc(100dvh - 330px); min-height: 340px; border-radius: 8px; }
+
+  .search-hero { padding: 0 4px 0 12px; }
+  .foryou-summary { font-size: 14px; }
+
+  dialog.prefs {
+    width: 100%; max-width: 100%; max-height: 94vh; margin: auto 0 0; border: 0; border-radius: 18px 18px 0 0;
+  }
+  .prefs-inner { padding: 10px 20px 0; gap: 12px; }
+  .prefs h2 { font-size: 27px; }
+  .prefs legend { font-size: 18px; }
+  .prefs-actions { margin: 0 -20px; padding: 12px 20px calc(16px + env(safe-area-inset-bottom)); }
+  .prefs-actions .btn { flex: 1 1 100%; }
 
   /* Detail becomes a bottom sheet. */
   dialog.detail {

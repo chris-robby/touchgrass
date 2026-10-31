@@ -6,6 +6,7 @@ import {
   readFilters, setParams, today, weekdayIndex,
 } from "../data";
 import { openDetail, syncDetail } from "../detail";
+import { refreshForYou, setupForYou } from "../forYou";
 import { chipTime, fmtLongDate, fmtMonth, weekdayShort } from "../format";
 import { countLabel, moreLabel, t } from "../i18n";
 import {
@@ -69,12 +70,14 @@ function start(events: Ev[]): void {
   const panelEl = shell.main.querySelector<HTMLElement>(".day-panel")!;
   const titleEl = shell.headerExtra.querySelector<HTMLElement>(".cal-title")!;
 
-  renderFilterBar(shell.filtersSlot, () => f, { when: false, search: true, boroughs }, (patch) => {
+  const onPatch = (patch: Partial<Filters>) => {
     f = { ...f, ...patch };
     setParams(filtersToParams(f));
     updateNavLinks(f);
     render();
-  });
+  };
+  renderFilterBar(shell.filtersSlot, () => f, { when: false, search: true, boroughs }, onPatch);
+  setupForYou({ events, boroughs, getFilters: () => f, onPatch });
 
   const go = (next: { day?: string; month?: string }) => {
     if (next.day) selected = next.day;
@@ -105,6 +108,7 @@ function start(events: Ev[]): void {
   onEventClick(panelEl, openEvent);
 
   function render(): void {
+    refreshForYou();
     const { name, year } = fmtMonth(month);
     titleEl.innerHTML = `${esc(name)} <span class="cal-year">${year}</span>`;
     document.title = `${name} ${year} — touchgrass`;

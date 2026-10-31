@@ -5,11 +5,12 @@ import {
   setParams,
 } from "../data";
 import { openDetail, syncDetail } from "../detail";
+import { emptyHtml, refreshForYou, setupForYou } from "../forYou";
 import { dayGroupLabel, fmtLongDate, fmtShortDate } from "../format";
 import { countLabel, showMoreLabel, t } from "../i18n";
 import { venueLayer, createMap } from "../map";
 import {
-  bindSearch, esc, eventRowHtml, icons, onEventClick, renderFilterBar, renderShell, updateNavLinks,
+  bindSearch, esc, eventRowHtml, onEventClick, renderFilterBar, renderShell, searchFieldHtml, updateNavLinks,
 } from "../ui";
 
 const PAGE_SIZE = 60;
@@ -25,10 +26,7 @@ shell.headerExtra.innerHTML = `
       <h1>${esc(t("hero.title"))}</h1>
       <p>${esc(t("hero.sub"))}</p>
     </div>
-    <label class="search search-hero">${icons.search}
-      <span class="sr-only">${t("search.label")}</span>
-      <input type="search" name="q" value="${esc(f.q)}" placeholder="${esc(t("search.placeholder"))}">
-    </label>
+    ${searchFieldHtml(f.q, "search-hero")}
   </div>`;
 shell.main.innerHTML = `<p class="status">${t("loading")}</p>`;
 
@@ -81,6 +79,7 @@ function start(events: Ev[]): void {
   };
   renderFilterBar(shell.filtersSlot, () => f, { when: true, search: false, boroughs }, onPatch);
   bindSearch(heroSearch, onPatch);
+  setupForYou({ events, boroughs, getFilters: () => f, onPatch });
 
   moreBtn.addEventListener("click", () => {
     limit += PAGE_SIZE;
@@ -93,6 +92,7 @@ function start(events: Ev[]): void {
     const range = dateRange(f);
     const filtered = events.filter((e) => e.endMs >= now && matches(e, f, range));
     lastFiltered = filtered;
+    refreshForYou();
     pins?.update(filtered);
     ensureMap();
 
@@ -123,7 +123,7 @@ function start(events: Ev[]): void {
           ${list.map((e) => eventRowHtml(e)).join("")}
         </section>`;
     }
-    groupsEl.innerHTML = html || `<p class="empty">${t("empty.filters")}</p>`;
+    groupsEl.innerHTML = html || emptyHtml(f);
     const left = filtered.length - shown;
     moreBtn.hidden = left <= 0;
     moreBtn.textContent = showMoreLabel(left);
