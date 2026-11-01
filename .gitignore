@@ -9,3 +9,6 @@ site/public/data/
 data/events.json
 data/meta.json
 data/cache/
+
+# Claude Code local files (agent worktrees, settings)
+.claude/
