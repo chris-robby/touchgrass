@@ -107,6 +107,13 @@ tiles, no API key). Design follows `touchgrass-handoff/DESIGN.md`.
 | `map.html` | Full map, one pin per venue with a count; tap → that venue's events |
 | `about.html` | What the site is + Ville de Montréal attribution |
 
+- **Less repetitive list**: an activity that repeats (same title — free skating at
+  several rinks, a weekly storytime) is shown once, at its next date, with
+  "+N autres dates · N lieux"; the event detail lists the other dates (each opens that
+  session). Long days get Morning / Afternoon / Evening sub-headings. Rows show a small
+  photo (resized by the image host where possible: Cloudinary, Caligram). The FREE tag
+  is left out of lists (99% of events are free); prices and INSCRIPTION/BILLET tags stay.
+  The calendar still shows every date.
 - **"For you" preferences** (`src/prefs.ts`, `src/forYou.ts`): on the first visit a panel
   asks what the visitor is into — 8 interest groups (each covering several of the 24
   categories), who it's for (adults / kids & family / teens / seniors), boroughs, free

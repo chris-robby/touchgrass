@@ -138,6 +138,12 @@ class BuildFilterTests(unittest.TestCase):
         self.assertTrue(build_data.has_ended(morning, self.now))
         self.assertFalse(build_data.has_ended(evening, self.now))
 
+    def test_coordinates_outside_montreal_are_dropped(self):
+        online = build_data.valid_coordinates({"lat": 0.0, "lng": 0.0})
+        self.assertEqual((online["lat"], online["lng"]), (None, None))
+        ok = build_data.valid_coordinates({"lat": 45.5124, "lng": -73.5607})
+        self.assertEqual((ok["lat"], ok["lng"]), (45.5124, -73.5607))
+
     def test_dedupe_keeps_first(self):
         out = build_data.dedupe([{"id": "a", "n": 1}, {"id": "a", "n": 2}, {"id": "b"}])
         self.assertEqual([e.get("n") for e in out], [1, None])

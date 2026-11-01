@@ -200,7 +200,7 @@ main.wrap { padding-top: 8px; padding-bottom: 56px; }
 
 /* The core component: a ruled row, not a card. */
 .ev-row {
-  display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 20px; align-items: start;
+  display: grid; grid-template-columns: 96px minmax(0, 1fr) 84px; gap: 20px; align-items: start;
   padding: 20px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink);
 }
 .ev-row:hover { color: var(--ink); background: linear-gradient(var(--paper-dim), var(--paper-dim)) no-repeat; background-size: 100% 100%; }
@@ -216,6 +216,23 @@ main.wrap { padding-top: 8px; padding-bottom: 56px; }
 .ev-title { font-size: 21px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
 .ev-venue { font-size: 15px; color: var(--muted); }
 
+.ev-row.no-thumb { grid-template-columns: 96px minmax(0, 1fr); }
+
+/* Event photo: a small square, so rows stay rows (not cards) but are easier to tell apart. */
+.ev-thumb {
+  width: 84px; height: 84px; object-fit: cover; border-radius: 6px;
+  background: var(--paper-dim); border: 1px solid var(--line);
+}
+/* Price / registration tags and "+N more dates", under the venue. */
+.ev-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 4px; }
+.ev-more { font-size: 13px; font-weight: 700; color: var(--forest); }
+
+/* Morning / Afternoon / Evening inside a long day. */
+.part-heading {
+  margin: 18px 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--line);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+
 .ev-tags { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .tag {
   display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; line-height: 1.2;
@@ -224,7 +241,9 @@ main.wrap { padding-top: 8px; padding-bottom: 56px; }
 .tag-free { background: var(--lime); }
 .tag-outline { border: 1.5px solid var(--ink); padding: 3.5px 8.5px; }
 
-.ev-row.compact { grid-template-columns: 64px minmax(0, 1fr) auto; gap: 14px; padding: 16px 0; }
+.ev-row.compact { grid-template-columns: 64px minmax(0, 1fr) 60px; gap: 14px; padding: 16px 0; }
+.ev-row.compact.no-thumb { grid-template-columns: 64px minmax(0, 1fr); }
+.ev-row.compact .ev-thumb { width: 60px; height: 60px; }
 .ev-row.compact .ev-time { font-size: 20px; }
 .ev-row.compact .ev-time-kicker, .ev-row.compact .ev-time-sub { font-size: 11px; }
 .ev-row.compact .ev-cat { font-size: 11px; }
@@ -362,6 +381,20 @@ dialog.detail::backdrop { background: rgba(19, 40, 30, 0.55); }
 .strong { font-weight: 700; }
 .muted { color: var(--muted); }
 
+.other-dates h3 {
+  margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.other-dates ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.other-dates li { border-bottom: 1px solid var(--line); }
+.other-dates li[hidden] { display: none; }
+.other-dates li button {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; width: 100%; min-height: 44px;
+  padding: 8px 0; border: 0; background: transparent; text-align: left; color: var(--ink);
+}
+.other-dates li button:hover .other-when { text-decoration: underline; }
+.other-when { font-weight: 700; color: var(--forest); }
+.other-where { color: var(--muted); font-size: 14px; }
+
 .detail-desc p { margin: 0 0 10px; font-size: 16px; line-height: 1.55; }
 .detail-desc p:last-child { margin-bottom: 0; }
 .detail-map { height: 160px; border-radius: 8px; border: 1.5px solid var(--ink); }
@@ -467,7 +500,10 @@ dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
 
   .day-heading { font-size: 24px; margin-top: 0; }
   .day-group { margin-top: 18px; }
-  .ev-row { grid-template-columns: 58px minmax(0, 1fr) auto; gap: 12px; padding: 14px 0; }
+  .ev-row { grid-template-columns: 58px minmax(0, 1fr) 64px; gap: 12px; padding: 14px 0; }
+  .ev-row.no-thumb { grid-template-columns: 58px minmax(0, 1fr); }
+  .ev-thumb { width: 64px; height: 64px; }
+  .ev-more { font-size: 12px; }
   .ev-time { font-size: 18px; }
   .ev-time-kicker, .ev-time-sub { font-size: 11px; }
   .ev-cat { font-size: 11px; }
@@ -475,7 +511,9 @@ dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
   .ev-venue { font-size: 13px; }
   .tag { font-size: 12px; padding: 4px 8px; }
   .tag-outline { padding: 2.5px 6.5px; }
-  .ev-row.compact { grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; padding: 14px 0; }
+  .ev-row.compact { grid-template-columns: 56px minmax(0, 1fr) 56px; gap: 12px; padding: 14px 0; }
+  .ev-row.compact.no-thumb { grid-template-columns: 56px minmax(0, 1fr); }
+  .ev-row.compact .ev-thumb { width: 56px; height: 56px; }
   .ev-row.compact .ev-time { font-size: 18px; }
   .ev-row.compact .ev-title { font-size: 16px; }
   .ev-row.compact .ev-venue { font-size: 13px; }

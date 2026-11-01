@@ -2,10 +2,10 @@
 // day's events. Month, day and open event are in the URL (?m=, ?d=, ?e=).
 import "../styles.css";
 import {
-  addDays, byDisplayOrder, dayToDate, Ev, Filters, filtersToParams, loadEvents, matches, param,
-  readFilters, setParams, today, weekdayIndex,
+  addDays, byDisplayOrder, dayToDate, Ev, Filters, filtersToParams, groupSeries, loadEvents, matches, param,
+  readFilters, seriesKey, setParams, today, weekdayIndex,
 } from "../data";
-import { openDetail, syncDetail } from "../detail";
+import { openDetail, setSeriesLookup, syncDetail } from "../detail";
 import { refreshForYou, setupForYou } from "../forYou";
 import { chipTime, fmtLongDate, fmtMonth, weekdayShort } from "../format";
 import { countLabel, moreLabel, t } from "../i18n";
@@ -54,6 +54,8 @@ try {
 
 function start(events: Ev[]): void {
   const byId = new Map(events.map((e) => [e.id, e]));
+  const allSeries = groupSeries(events.filter((x) => x.endMs >= Date.now()));
+  setSeriesLookup((e) => allSeries.get(seriesKey(e)) ?? []);
   const boroughs = [...new Set(events.map((e) => e.borough).filter(Boolean) as string[])].sort((a, b) => a.localeCompare(b, "fr"));
 
   shell.main.innerHTML = `
@@ -168,7 +170,7 @@ function start(events: Ev[]): void {
     const dayList = byDay.get(selected) ?? [];
     panelEl.innerHTML = `
       <h2 class="panel-heading"><span class="kicker">${esc(countLabel(dayList.length))}</span>${esc(fmtLongDate(selected))}</h2>
-      ${dayList.length ? dayList.map((e) => eventRowHtml(e, true)).join("") : `<p class="empty">${t("empty.day")}</p>`}`;
+      ${dayList.length ? dayList.map((e) => eventRowHtml(e, { compact: true })).join("") : `<p class="empty">${t("empty.day")}</p>`}`;
   }
 
   render();

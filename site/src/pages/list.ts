@@ -1,12 +1,12 @@
 // Home page: hero + search, filters, events grouped by day, venue map on wide screens.
 import "../styles.css";
 import {
-  byDisplayOrder, dateRange, Ev, Filters, filtersToParams, hasActiveFilters, loadEvents, matches, readFilters,
-  setParams,
+  byDisplayOrder, dateRange, Ev, Filters, filtersToParams, groupSeries, hasActiveFilters, loadEvents, matches,
+  readFilters, seriesKey, setParams,
 } from "../data";
-import { openDetail, syncDetail } from "../detail";
+import { openDetail, setSeriesLookup, syncDetail } from "../detail";
 import { emptyHtml, refreshForYou, setupForYou } from "../forYou";
-import { dayGroupLabel, fmtLongDate, fmtShortDate } from "../format";
+import { dayGroupLabel, fmtLongDate, fmtShortDate, hourOf } from "../format";
 import { countLabel, showMoreLabel, t } from "../i18n";
 import { venueLayer, createMap } from "../map";
 import {
@@ -14,6 +14,7 @@ import {
 } from "../ui";
 
 const PAGE_SIZE = 60;
+const PARTS_MIN_ROWS = 8; // days with at least this many rows get Morning/Afternoon/Evening
 const WIDE = window.matchMedia("(min-width: 1000px)");
 
 const shell = renderShell("list");
@@ -96,12 +97,17 @@ function start(events: Ev[]): void {
     pins?.update(filtered);
     ensureMap();
 
-    // Each event appears once. Multi-day events go on their last day
+    // A repeating activity (same title) is shown once, at its next date, with
+    // "+N more dates"; the detail view lists the others.
+    const series = groupSeries(filtered);
+    const rows = filtered.filter((e) => e.multiDay || series.get(seriesKey(e))![0] === e);
+
+    // Each row appears once. Multi-day events go on their last day
     // ("until Dec 6" = last chance), or the last day shown when a date filter
     // is on. Putting them on their first day would bury today's events under
     // dozens of months-long exhibitions.
     const groups = new Map<string, Ev[]>();
-    for (const e of filtered) {
+    for (const e of rows) {
       let day = e.multiDay ? e.endDay : e.startDay;
       if (range && day > range[1]) day = range[1];
       (groups.get(day) ?? groups.set(day, []).get(day)!).push(e);
@@ -120,16 +126,40 @@ function start(events: Ev[]): void {
       html += `
         <section class="day-group">
           <h2 class="day-heading">${esc(label)} <span class="kicker">${esc(isNamed ? fmtLongDate(day) : fmtShortDate(day))}</span></h2>
-          ${list.map((e) => eventRowHtml(e)).join("")}
+          ${dayRowsHtml(list, series)}
         </section>`;
     }
     groupsEl.innerHTML = html || emptyHtml(f);
-    const left = filtered.length - shown;
+    const left = rows.length - shown;
     moreBtn.hidden = left <= 0;
     moreBtn.textContent = showMoreLabel(left);
   }
 
+  /** Rows of one day; long days get Morning / Afternoon / Evening sub-headings. */
+  function dayRowsHtml(list: Ev[], series: Map<string, Ev[]>): string {
+    const row = (e: Ev) => eventRowHtml(e, { series: e.multiDay ? undefined : series.get(seriesKey(e)) });
+    if (list.length < PARTS_MIN_ROWS) return list.map(row).join("");
+    const part = (e: Ev) => {
+      if (e.multiDay || e.all_day) return "part.allday";
+      const h = hourOf(e.startMs);
+      return h < 12 ? "part.morning" : h < 17 ? "part.afternoon" : "part.evening";
+    };
+    let html = "";
+    let current = "";
+    for (const e of list) {
+      const p = part(e);
+      if (p !== current) {
+        html += `<h3 class="part-heading">${t(p as Parameters<typeof t>[0])}</h3>`;
+        current = p;
+      }
+      html += row(e);
+    }
+    return html;
+  }
+
   render();
+  const allSeries = groupSeries(events.filter((x) => x.endMs >= Date.now()));
+  setSeriesLookup((e) => allSeries.get(seriesKey(e)) ?? []);
   syncDetail(byId);
   window.addEventListener("popstate", () => syncDetail(byId));
 }

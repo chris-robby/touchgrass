@@ -252,3 +252,24 @@ export function filterQuery(f: Filters): string {
   const qs = p.toString();
   return qs ? `?${qs}` : "";
 }
+
+// ---------------------------------------------------------------- recurring activities
+// The same activity often appears many times (free skating at 3 rinks, every
+// day). Events with the same title are treated as one "series" so the list can
+// show them once, with their other dates.
+
+export function seriesKey(e: Ev): string {
+  return normalize(e.title).replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+/** Single-day events grouped by series, each list sorted by start time. */
+export function groupSeries(events: Ev[]): Map<string, Ev[]> {
+  const out = new Map<string, Ev[]>();
+  for (const e of events) {
+    if (e.multiDay) continue;
+    const key = seriesKey(e);
+    (out.get(key) ?? out.set(key, []).get(key)!).push(e);
+  }
+  for (const list of out.values()) list.sort((a, b) => a.startMs - b.startMs);
+  return out;
+}

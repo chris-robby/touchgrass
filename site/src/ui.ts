@@ -1,7 +1,7 @@
 // Shared page pieces: header, footer, mobile bottom nav, filter bar, event rows.
 import { Ev, Filters, filterQuery, hasActiveFilters, loadMeta } from "./data";
 import { fmtUpdated, timeColumn } from "./format";
-import { categoryLabel, categorySlugs, lang, priceTag, setLang, t } from "./i18n";
+import { categoryLabel, categorySlugs, lang, priceTag, seriesLabel, setLang, t } from "./i18n";
 
 export type Page = "list" | "calendar" | "map" | "about";
 
@@ -244,9 +244,11 @@ export function bindSearch(input: HTMLInputElement, emit: (patch: Partial<Filter
 
 // ---------------------------------------------------------------- event rows
 
-export function tagsHtml(e: Ev): string {
+/** Price + registration tags. In lists `showFree` is off: almost everything is
+ *  free, so a FREE tag on every row says nothing; only prices stand out. */
+export function tagsHtml(e: Ev, showFree = true): string {
   let html = e.is_free
-    ? `<span class="tag tag-free">${t("tag.free")}</span>`
+    ? (showFree ? `<span class="tag tag-free">${t("tag.free")}</span>` : "")
     : `<span class="tag tag-outline tag-price">${esc(priceTag(e.price_min, e.price_max))}</span>`;
   if (e.registration === "required") {
     html += `<span class="tag tag-outline" title="${t("tag.required.long")}"><span aria-hidden="true">${t("tag.required")}</span><span class="sr-only">${t("tag.required.long")}</span></span>`;
@@ -270,10 +272,31 @@ export function eventHref(id: string): string {
   return `?${p.toString()}`;
 }
 
-export function eventRowHtml(e: Ev, compact = false): string {
+/** A small version of the event photo, when the image host can resize it. */
+export function thumbUrl(url: string | null): string | null {
+  if (!url) return null;
+  if (url.includes("res.cloudinary.com/")) {
+    return url.replace(/\/upload\/[^/]*c_l?fill[^/]*\//, "/upload/w_160,h_160,c_fill,g_auto/");
+  }
+  if (url.includes("cdn.caligram.com/")) return url.replace(/\/(medium|xlarge|large)\//, "/thumbnail/");
+  return url;
+}
+
+export interface RowOptions {
+  compact?: boolean;
+  /** Every date of this activity (including this one), when it repeats. */
+  series?: Ev[];
+}
+
+export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   const tc = timeColumn(e);
+  const thumb = thumbUrl(e.image);
+  const more = opts.series && opts.series.length > 1
+    ? seriesLabel(opts.series.length - 1, new Set(opts.series.map((s) => s.venue ?? s.borough)).size)
+    : "";
+  const tags = tagsHtml(e, false);
   return `
-    <a class="ev-row${compact ? " compact" : ""}" href="${eventHref(e.id)}" data-id="${e.id}">
+    <a class="ev-row${opts.compact ? " compact" : ""}${thumb ? "" : " no-thumb"}" href="${eventHref(e.id)}" data-id="${e.id}">
       <span class="ev-time">
         ${tc.kicker ? `<span class="ev-time-kicker">${esc(tc.kicker)}</span>` : ""}
         <span class="ev-time-main">${esc(tc.main)}</span>
@@ -282,9 +305,10 @@ export function eventRowHtml(e: Ev, compact = false): string {
       <span class="ev-body">
         <span class="ev-cat">${esc(categoryLabel(e.category))}</span>
         <span class="ev-title">${esc(e.title)}</span>
-        <span class="ev-venue">${venueLine(e, !compact)}</span>
+        <span class="ev-venue">${venueLine(e, !opts.compact)}</span>
+        ${tags || more ? `<span class="ev-meta">${tags}${more ? `<span class="ev-more">${esc(more)}</span>` : ""}</span>` : ""}
       </span>
-      <span class="ev-tags">${tagsHtml(e)}</span>
+      ${thumb ? `<img class="ev-thumb" src="${esc(thumb)}" alt="" loading="lazy" decoding="async">` : ""}
     </a>`;
 }
 

@@ -16,6 +16,11 @@ function hm(ms: number): { h: number; m: string } {
   return { h, m };
 }
 
+/** Hour of the day (0–23) in Montréal. */
+export function hourOf(ms: number): number {
+  return hm(ms).h;
+}
+
 /** "19h30" / "19h" in French; "7:30 PM" in English. */
 export function clock(ms: number): string {
   const { h, m } = hm(ms);

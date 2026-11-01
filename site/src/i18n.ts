@@ -101,6 +101,12 @@ const fr = {
   "footer.updated": "Mis à jour",
   "footer.about": "À propos",
   "about.title": "À propos",
+  "part.morning": "Matin",
+  "part.afternoon": "Après-midi",
+  "part.evening": "Soir",
+  "part.allday": "Toute la journée et en cours",
+  "detail.otherDates": "Autres dates",
+  "detail.showAllDates": "Voir toutes les dates",
 };
 
 type Key = keyof typeof fr;
@@ -178,6 +184,12 @@ const en: Record<Key, string> = {
   "footer.updated": "Updated",
   "footer.about": "About",
   "about.title": "About",
+  "part.morning": "Morning",
+  "part.afternoon": "Afternoon",
+  "part.evening": "Evening",
+  "part.allday": "All day and ongoing",
+  "detail.otherDates": "Other dates",
+  "detail.showAllDates": "Show all dates",
 };
 
 const strings: Record<Lang, Record<Key, string>> = { fr, en };
@@ -192,6 +204,15 @@ export function countLabel(n: number): string {
 
 export function moreLabel(n: number): string {
   return lang === "fr" ? `+${n} autre${n > 1 ? "s" : ""}` : `+${n} more`;
+}
+
+/** "+11 autres dates · 3 lieux" / "+11 more dates · 3 places" */
+export function seriesLabel(moreDates: number, places: number): string {
+  const dates = lang === "fr"
+    ? `+${moreDates} autre${moreDates > 1 ? "s" : ""} date${moreDates > 1 ? "s" : ""}`
+    : `+${moreDates} more date${moreDates > 1 ? "s" : ""}`;
+  if (places < 2) return dates;
+  return `${dates} · ${places} ${lang === "fr" ? "lieux" : "places"}`;
 }
 
 export function showMoreLabel(n: number): string {

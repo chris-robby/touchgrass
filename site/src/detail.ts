@@ -5,7 +5,7 @@
 // back button closes it.
 import type L from "leaflet";
 import { Ev, param, setParams } from "./data";
-import { whenText } from "./format";
+import { chipTime, fmtShortDate, whenText } from "./format";
 import { audienceLabel, categoryLabel, lang, money, SOURCE_NAMES, t } from "./i18n";
 import { addPin, createMap } from "./map";
 import { esc, icons, tagsHtml } from "./ui";
@@ -14,6 +14,13 @@ let dialog: HTMLDialogElement;
 let miniMap: L.Map | null = null;
 let pushedByUs = false;
 let current: Ev | null = null;
+let seriesOf: (e: Ev) => Ev[] = () => [];
+const OTHER_DATES_SHOWN = 6;
+
+/** Pages tell the detail view how to find an activity's other dates. */
+export function setSeriesLookup(fn: (e: Ev) => Ev[]): void {
+  seriesOf = fn;
+}
 
 function ensureDialog(): HTMLDialogElement {
   if (dialog) return dialog;
@@ -46,6 +53,23 @@ function accessText(e: Ev): string {
   if (e.registration === "ticket") return t("tag.ticket.long");
   if (e.registration === "drop-in") return t("detail.dropin");
   return t("detail.accessUnknown");
+}
+
+/** "Other dates" of a repeating activity, each opening that session. */
+function otherDatesHtml(e: Ev): string {
+  const others = seriesOf(e).filter((o) => o.id !== e.id);
+  if (!others.length) return "";
+  const item = (o: Ev, hidden: boolean) => `
+    <li${hidden ? " hidden" : ""}><button type="button" data-other="${o.id}">
+      <span class="other-when">${esc(fmtShortDate(o.startDay))} · ${esc(chipTime(o.startMs))}</span>
+      <span class="other-where">${esc(o.venue ?? o.borough ?? "")}</span>
+    </button></li>`;
+  return `
+    <section class="other-dates" aria-labelledby="other-dates-title">
+      <h3 id="other-dates-title">${t("detail.otherDates")} (${others.length})</h3>
+      <ul>${others.map((o, i) => item(o, i >= OTHER_DATES_SHOWN)).join("")}</ul>
+      ${others.length > OTHER_DATES_SHOWN ? `<button type="button" class="link-btn show-all-dates">${t("detail.showAllDates")}</button>` : ""}
+    </section>`;
 }
 
 function priceText(e: Ev): string {
@@ -97,6 +121,8 @@ function descriptionHtml(text: string): string {
 
 export function openDetail(e: Ev, push = true): void {
   const d = ensureDialog();
+  miniMap?.remove(); // when switching events while the dialog is open
+  miniMap = null;
   current = e;
   if (push) {
     setParams({ e: e.id }, true);
@@ -121,6 +147,7 @@ export function openDetail(e: Ev, push = true): void {
         <dt>${t("detail.price")}</dt><dd>${esc(priceText(e))}</dd>
         <dt>${t("detail.access")}</dt><dd>${esc(accessText(e))}</dd>
       </dl>
+      ${otherDatesHtml(e)}
       <div class="detail-desc">${descriptionHtml(e.description)}</div>
       ${e.lat != null ? `<div class="detail-map" role="img" aria-label="${t("detail.mapLabel")}"></div>` : ""}
       ${learnMoreHtml(e)}
@@ -135,6 +162,17 @@ export function openDetail(e: Ev, push = true): void {
 
   d.querySelector(".close-btn")!.addEventListener("click", () => d.close());
   d.querySelector(".ics-btn")!.addEventListener("click", () => downloadIcs(e));
+  d.querySelector(".show-all-dates")?.addEventListener("click", (ev) => {
+    d.querySelectorAll<HTMLElement>(".other-dates li[hidden]").forEach((li) => (li.hidden = false));
+    (ev.currentTarget as HTMLElement).remove();
+  });
+  d.querySelectorAll<HTMLButtonElement>("[data-other]").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      const other = seriesOf(e).find((o) => o.id === btn.dataset.other);
+      if (!other) return;
+      setParams({ e: other.id }); // same history entry: back still closes the dialog
+      openDetail(other, false);
+    }));
 
   if (!d.open) d.showModal();
   d.scrollTop = 0;

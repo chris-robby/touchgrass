@@ -53,6 +53,19 @@ def has_ended(event: dict, now: datetime) -> bool:
     return datetime.fromisoformat(event["end"]) < now
 
 
+# Rough box around the island: coordinates outside it are data errors (e.g. an
+# online event's "venue" at 0,0) and would drag the map out to the whole world.
+LAT_RANGE = (45.3, 45.8)
+LNG_RANGE = (-74.1, -73.4)
+
+
+def valid_coordinates(event: dict) -> dict:
+    lat, lng = event.get("lat"), event.get("lng")
+    if lat is None or lng is None or not (LAT_RANGE[0] <= lat <= LAT_RANGE[1] and LNG_RANGE[0] <= lng <= LNG_RANGE[1]):
+        event["lat"] = event["lng"] = None
+    return event
+
+
 def affordable(event: dict) -> bool:
     return event.get("price_min") is not None and event["price_min"] <= MAX_PRICE
 
@@ -71,7 +84,7 @@ def build(enrich: bool = True) -> list[dict]:
     all_events = []
     for adapter in ADAPTERS:
         print(f"[{adapter.SOURCE_ID}] loading...", flush=True)
-        events = adapter.load(CACHE_DIR)
+        events = [valid_coordinates(e) for e in adapter.load(CACHE_DIR)]
         print(f"  {len(events)} public activities in source")
         events = [e for e in events if affordable(e) and end_date(e) >= now.date()]
         print(f"  {len(events)} upcoming, free or <= ${MAX_PRICE}")

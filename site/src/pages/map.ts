@@ -1,7 +1,9 @@
 // Map page: full-size venue map with the same filters as the list.
 import "../styles.css";
-import { dateRange, Ev, Filters, filtersToParams, loadEvents, matches, readFilters, setParams } from "../data";
-import { openDetail, syncDetail } from "../detail";
+import {
+  dateRange, Ev, Filters, filtersToParams, groupSeries, loadEvents, matches, readFilters, seriesKey, setParams,
+} from "../data";
+import { openDetail, setSeriesLookup, syncDetail } from "../detail";
 import { refreshForYou, setupForYou } from "../forYou";
 import { countLabel, t } from "../i18n";
 import { createMap, venueLayer } from "../map";
@@ -21,6 +23,8 @@ try {
 
 function start(events: Ev[]): void {
   const byId = new Map(events.map((e) => [e.id, e]));
+  const allSeries = groupSeries(events.filter((x) => x.endMs >= Date.now()));
+  setSeriesLookup((e) => allSeries.get(seriesKey(e)) ?? []);
   const boroughs = [...new Set(events.map((e) => e.borough).filter(Boolean) as string[])].sort((a, b) => a.localeCompare(b, "fr"));
 
   shell.main.classList.add("map-main");
