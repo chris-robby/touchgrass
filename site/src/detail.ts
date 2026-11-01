@@ -123,10 +123,6 @@ function learnMoreHtml(e: Ev): string {
     </section>`;
 }
 
-function descriptionHtml(text: string): string {
-  return text.split(/\n{2,}/).map((p) => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
-}
-
 export function openDetail(e: Ev, push = true): void {
   const d = ensureDialog();
   miniMap?.remove(); // when switching events while the dialog is open
@@ -157,7 +153,6 @@ export function openDetail(e: Ev, push = true): void {
         <dt>${t("detail.access")}</dt><dd>${esc(accessText(e))}</dd>
       </dl>
       ${otherDatesHtml(e)}
-      <div class="detail-desc">${descriptionHtml(e.description)}</div>
       ${e.lat != null ? `<div class="detail-map" role="img" aria-label="${t("detail.mapLabel")}"></div>` : ""}
       ${learnMoreHtml(e)}
       <div class="detail-actions">

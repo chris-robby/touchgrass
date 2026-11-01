@@ -289,9 +289,9 @@ export interface RowOptions {
 }
 
 /**
- * One event in a list: kept deliberately quiet — the start time, the title and a
- * single grey line (place · borough · access · other dates). Category, end time,
- * photo and the full price details are in the event's detail view.
+ * One event in a list: kept deliberately quiet — the start time, the title, a
+ * single grey line (place · borough · access · other dates) and a small photo.
+ * Category, end time and the full price details are in the event's detail view.
  */
 export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   const tc = timeColumn(e);
@@ -300,8 +300,9 @@ export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   else if (e.registration === "ticket") bits.push(esc(t("meta.ticket")));
   if (opts.series && opts.series.length > 1) bits.push(esc(seriesLabel(opts.series.length - 1)));
   const price = e.is_free ? "" : `<span class="ev-price">${esc(priceTag(e.price_min, e.price_max))}</span> `;
+  const thumb = thumbUrl(e.image);
   return `
-    <a class="ev-row${opts.compact ? " compact" : ""}" href="${eventHref(e.id)}" data-id="${e.id}">
+    <a class="ev-row${opts.compact ? " compact" : ""}${thumb ? "" : " no-thumb"}" href="${eventHref(e.id)}" data-id="${e.id}">
       <span class="ev-time">
         ${tc.kicker ? `<span class="ev-time-kicker">${esc(tc.kicker)}</span>` : ""}
         ${e.all_day && !e.multiDay
@@ -312,6 +313,7 @@ export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
         <span class="ev-title">${esc(e.title)}</span>
         <span class="ev-venue">${price}${bits.filter(Boolean).join(" · ")}</span>
       </span>
+      ${thumb ? `<img class="ev-thumb" src="${esc(thumb)}" alt="" loading="lazy" decoding="async">` : ""}
     </a>`;
 }
 
