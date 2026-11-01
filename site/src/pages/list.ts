@@ -1,4 +1,4 @@
-// Home page: hero + search, filters, events grouped by day, venue map on wide screens.
+// Home page: hero + search, filters, events grouped by day. (The map has its own page.)
 import "../styles.css";
 import {
   byDisplayOrder, dateRange, Ev, Filters, filtersToParams, groupSeries, hasActiveFilters, loadEvents, matches,
@@ -8,14 +8,12 @@ import { openDetail, setSeriesLookup, syncDetail } from "../detail";
 import { emptyHtml, refreshForYou, setupForYou } from "../forYou";
 import { dayGroupLabel, fmtLongDate, fmtShortDate, hourOf } from "../format";
 import { countLabel, showMoreLabel, t } from "../i18n";
-import { venueLayer, createMap } from "../map";
 import {
   bindSearch, esc, eventRowHtml, onEventClick, renderFilterBar, renderShell, searchFieldHtml, updateNavLinks,
 } from "../ui";
 
 const PAGE_SIZE = 60;
-const PARTS_MIN_ROWS = 8; // days with at least this many rows get Morning/Afternoon/Evening
-const WIDE = window.matchMedia("(min-width: 1000px)");
+const PARTS_MIN_ROWS = 12; // only busy days get Morning/Afternoon/Evening
 
 const shell = renderShell("list");
 let f: Filters = readFilters();
@@ -51,22 +49,11 @@ function start(events: Ev[]): void {
         <div class="groups"></div>
         <button type="button" class="btn btn-outline show-more" hidden></button>
       </div>
-      <aside class="map-aside" aria-label="${t("map.label")}"><div class="map-box"></div></aside>
     </div>`;
   const groupsEl = shell.main.querySelector<HTMLElement>(".groups")!;
   const countEl = shell.main.querySelector<HTMLElement>(".result-count")!;
   const moreBtn = shell.main.querySelector<HTMLButtonElement>(".show-more")!;
 
-  // The map is only shown (and only loaded) on wide screens.
-  let pins: ReturnType<typeof venueLayer> | null = null;
-  let lastFiltered: Ev[] = [];
-  const ensureMap = () => {
-    if (pins || !WIDE.matches) return;
-    const map = createMap(shell.main.querySelector<HTMLElement>(".map-box")!, { scrollWheelZoom: false });
-    pins = venueLayer(map, (id) => openDetail(byId.get(id)!));
-    pins.update(lastFiltered);
-  };
-  WIDE.addEventListener("change", ensureMap);
 
   const heroSearch = shell.headerExtra.querySelector<HTMLInputElement>('input[name="q"]')!;
   const onPatch = (patch: Partial<Filters>) => {
@@ -92,10 +79,7 @@ function start(events: Ev[]): void {
     const now = Date.now();
     const range = dateRange(f);
     const filtered = events.filter((e) => e.endMs >= now && matches(e, f, range));
-    lastFiltered = filtered;
     refreshForYou();
-    pins?.update(filtered);
-    ensureMap();
 
     // A repeating activity (same title) is shown once, at its next date, with
     // "+N more dates"; the detail view lists the others.

@@ -10,6 +10,14 @@ import { audienceLabel, categoryLabel, lang, money, SOURCE_NAMES, t } from "./i1
 import { addPin, createMap } from "./map";
 import { esc, icons, tagsHtml } from "./ui";
 
+/** A wide version of the event photo for the top of the detail view. */
+function bannerUrl(url: string): string {
+  if (url.includes("res.cloudinary.com/")) {
+    return url.replace(/\/upload\/[^/]*c_l?fill[^/]*\//, "/upload/w_1200,h_500,c_fill,g_auto/");
+  }
+  return url;
+}
+
 let dialog: HTMLDialogElement;
 let miniMap: L.Map | null = null;
 let pushedByUs = false;
@@ -130,6 +138,7 @@ export function openDetail(e: Ev, push = true): void {
   }
   const where = e.venue ?? (e.format === "online" ? t("online") : "—");
   d.innerHTML = `
+    ${e.image ? `<img class="detail-photo" src="${esc(bannerUrl(e.image))}" alt="">` : ""}
     <div class="detail-inner">
       <span class="sheet-handle" aria-hidden="true"></span>
       <div class="detail-head">

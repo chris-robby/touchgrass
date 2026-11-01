@@ -31,8 +31,6 @@ const T = {
   seeAll: fr ? "Tout voir" : "See everything",
   seeingAll: fr ? "Vous voyez toutes les activités." : "You're seeing every event.",
   backToMine: fr ? "Revenir à mes préférences" : "Back to my preferences",
-  personalize: fr ? "Trop de choix? Dites-nous ce qui vous intéresse." : "Too much? Tell us what you're into.",
-  choose: fr ? "Choisir mes intérêts" : "Choose my interests",
 };
 
 interface Options {
@@ -76,6 +74,8 @@ export function refreshForYou(): void {
     b.hidden = n === 0 || all;
     b.textContent = String(n);
   });
+  // No preferences: no bar (the filter button in the search field invites them).
+  bar.hidden = n === 0;
   if (n && !all) {
     bar.innerHTML = `<div class="wrap foryou-inner"><span class="kicker foryou-kicker">${T.forYou}</span>
       <span class="foryou-summary">${esc(prefsSummary())}</span>
@@ -84,9 +84,6 @@ export function refreshForYou(): void {
   } else if (n && all) {
     bar.innerHTML = `<div class="wrap foryou-inner"><span class="foryou-summary">${T.seeingAll}</span>
       <button type="button" class="link-btn" data-foryou="mine">${T.backToMine}</button></div>`;
-  } else {
-    bar.innerHTML = `<div class="wrap foryou-inner"><span class="foryou-summary">${T.personalize}</span>
-      <button type="button" class="link-btn" data-foryou="edit">${T.choose}</button></div>`;
   }
 }
 

@@ -102,18 +102,18 @@ tiles, no API key). Design follows `touchgrass-handoff/DESIGN.md`.
 
 | Page | What it does |
 |---|---|
-| `index.html` | Hero + search, filters, events grouped by day ("Show more" every 60), venue map on wide screens |
+| `index.html` | Hero + search, filters, events grouped by day ("Show more" every 60) |
 | `calendar.html` | Month grid (chips on desktop, dots on mobile) + selected day's list |
 | `map.html` | Full map, one pin per venue with a count; tap → that venue's events |
 | `about.html` | What the site is + Ville de Montréal attribution |
 
-- **Less repetitive list**: an activity that repeats (same title — free skating at
-  several rinks, a weekly storytime) is shown once, at its next date, with
-  "+N autres dates · N lieux"; the event detail lists the other dates (each opens that
-  session). Long days get Morning / Afternoon / Evening sub-headings. Rows show a small
-  photo (resized by the image host where possible: Cloudinary, Caligram). The FREE tag
-  is left out of lists (99% of events are free); prices and INSCRIPTION/BILLET tags stay.
-  The calendar still shows every date.
+- **Calm, less repetitive list**: each row is just the start time, the title and one
+  grey line (place · borough · "Inscription"/"Billet gratuit" · "+N dates"); prices
+  (rare: 99% of events are free) show in green. Category, end time, photo and full
+  details are in the event detail, which opens with the event photo. An activity that
+  repeats (same title) is shown once, at its next date, with "+N dates"; the detail
+  lists the other dates. Only busy days (12+ rows) get Morning / Afternoon / Evening
+  headings. The map has its own page, so the list keeps a comfortable reading width.
 - **"For you" preferences** (`src/prefs.ts`, `src/forYou.ts`): on the first visit a panel
   asks what the visitor is into — 8 interest groups (each covering several of the 24
   categories), who it's for (adults / kids & family / teens / seniors), boroughs, free

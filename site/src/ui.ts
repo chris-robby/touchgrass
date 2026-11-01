@@ -179,15 +179,15 @@ export function renderFilterBar(
           <button type="button" class="chip-btn" data-toggle="dropin" aria-pressed="${f.dropin}">${esc(t("dropin"))}</button>
         </div>
         <span class="divider" aria-hidden="true"></span>
-        <label class="select-label"><span class="select-caption">${t("category")}</span>
+        <label class="select-label"><span class="sr-only">${t("category")}</span>
           <select name="cat">
-            <option value="">${t("category.all")}</option>
+            <option value="">${t("category.allLong")}</option>
             ${cats.map((c) => `<option value="${c}"${c === f.cat ? " selected" : ""}>${esc(categoryLabel(c))}</option>`).join("")}
           </select>
         </label>
-        <label class="select-label"><span class="select-caption">${t("borough")}</span>
+        <label class="select-label"><span class="sr-only">${t("borough")}</span>
           <select name="boro">
-            <option value="">${t("borough.all")}</option>
+            <option value="">${t("borough.allLong")}</option>
             ${opts.boroughs.map((b) => `<option${b === f.boro ? " selected" : ""}>${esc(b)}</option>`).join("")}
           </select>
         </label>
@@ -288,27 +288,30 @@ export interface RowOptions {
   series?: Ev[];
 }
 
+/**
+ * One event in a list: kept deliberately quiet — the start time, the title and a
+ * single grey line (place · borough · access · other dates). Category, end time,
+ * photo and the full price details are in the event's detail view.
+ */
 export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   const tc = timeColumn(e);
-  const thumb = thumbUrl(e.image);
-  const more = opts.series && opts.series.length > 1
-    ? seriesLabel(opts.series.length - 1, new Set(opts.series.map((s) => s.venue ?? s.borough)).size)
-    : "";
-  const tags = tagsHtml(e, false);
+  const bits: string[] = [venueLine(e, !opts.compact)];
+  if (e.registration === "required") bits.push(esc(t("meta.required")));
+  else if (e.registration === "ticket") bits.push(esc(t("meta.ticket")));
+  if (opts.series && opts.series.length > 1) bits.push(esc(seriesLabel(opts.series.length - 1)));
+  const price = e.is_free ? "" : `<span class="ev-price">${esc(priceTag(e.price_min, e.price_max))}</span> `;
   return `
-    <a class="ev-row${opts.compact ? " compact" : ""}${thumb ? "" : " no-thumb"}" href="${eventHref(e.id)}" data-id="${e.id}">
+    <a class="ev-row${opts.compact ? " compact" : ""}" href="${eventHref(e.id)}" data-id="${e.id}">
       <span class="ev-time">
         ${tc.kicker ? `<span class="ev-time-kicker">${esc(tc.kicker)}</span>` : ""}
-        <span class="ev-time-main">${esc(tc.main)}</span>
-        ${tc.sub ? `<span class="ev-time-sub">${esc(tc.sub)}</span>` : ""}
+        ${e.all_day && !e.multiDay
+          ? `<span class="ev-time-kicker">${esc(t("allDay"))}</span>`
+          : `<span class="ev-time-main">${esc(tc.main)}</span>`}
       </span>
       <span class="ev-body">
-        <span class="ev-cat">${esc(categoryLabel(e.category))}</span>
         <span class="ev-title">${esc(e.title)}</span>
-        <span class="ev-venue">${venueLine(e, !opts.compact)}</span>
-        ${tags || more ? `<span class="ev-meta">${tags}${more ? `<span class="ev-more">${esc(more)}</span>` : ""}</span>` : ""}
+        <span class="ev-venue">${price}${bits.filter(Boolean).join(" · ")}</span>
       </span>
-      ${thumb ? `<img class="ev-thumb" src="${esc(thumb)}" alt="" loading="lazy" decoding="async">` : ""}
     </a>`;
 }
 

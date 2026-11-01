@@ -36,20 +36,20 @@ const fr = {
   "lang.switch": "Switch to English",
   "hero.title": "Des choses gratuites ou presque à faire à Montréal.",
   "hero.sub":
-    "Tout ici est gratuit ou coûte 10 $ et moins. Nouvelles activités chaque matin, tirées des données ouvertes de la Ville de Montréal.",
+    "Gratuit ou 10 $ et moins. Mis à jour chaque matin.",
   "search.label": "Rechercher des activités",
   "search.placeholder": "Concerts, parcs, ateliers…",
   "filters": "Filtres",
   "when": "Quand",
   "when.today": "Aujourd'hui",
-  "when.weekend": "Cette fin de semaine",
+  "when.weekend": "Fin de semaine",
   "when.week": "Cette semaine",
-  "when.custom": "Choisir des dates",
+  "when.custom": "Dates…",
   "when.from": "Du",
   "when.to": "Au",
   "access": "Accès",
   "dropin": "Sans inscription",
-  "free": "Gratuit seulement",
+  "free": "Gratuit",
   "category": "Catégorie",
   "category.all": "Toutes",
   "borough": "Arrondissement",
@@ -101,6 +101,10 @@ const fr = {
   "footer.updated": "Mis à jour",
   "footer.about": "À propos",
   "about.title": "À propos",
+  "meta.required": "Inscription",
+  "meta.ticket": "Billet gratuit",
+  "category.allLong": "Toutes les catégories",
+  "borough.allLong": "Tous les arrondissements",
   "part.morning": "Matin",
   "part.afternoon": "Après-midi",
   "part.evening": "Soir",
@@ -119,20 +123,20 @@ const en: Record<Key, string> = {
   "lang.switch": "Passer en français",
   "hero.title": "Free & almost-free things to do in Montréal.",
   "hero.sub":
-    "Everything here is free or $10 and under. Fresh listings every morning from the City of Montréal's open data.",
+    "Free or $10 and under. Updated every morning.",
   "search.label": "Search events",
   "search.placeholder": "Concerts, parks, workshops…",
   "filters": "Filters",
   "when": "When",
   "when.today": "Today",
-  "when.weekend": "This weekend",
+  "when.weekend": "Weekend",
   "when.week": "This week",
-  "when.custom": "Pick dates",
+  "when.custom": "Dates…",
   "when.from": "From",
   "when.to": "To",
   "access": "Access",
-  "dropin": "Drop-in only",
-  "free": "Free only",
+  "dropin": "Drop-in",
+  "free": "Free",
   "category": "Category",
   "category.all": "All",
   "borough": "Borough",
@@ -184,6 +188,10 @@ const en: Record<Key, string> = {
   "footer.updated": "Updated",
   "footer.about": "About",
   "about.title": "About",
+  "meta.required": "Registration",
+  "meta.ticket": "Free ticket",
+  "category.allLong": "All categories",
+  "borough.allLong": "All boroughs",
   "part.morning": "Morning",
   "part.afternoon": "Afternoon",
   "part.evening": "Evening",
@@ -206,13 +214,9 @@ export function moreLabel(n: number): string {
   return lang === "fr" ? `+${n} autre${n > 1 ? "s" : ""}` : `+${n} more`;
 }
 
-/** "+11 autres dates · 3 lieux" / "+11 more dates · 3 places" */
-export function seriesLabel(moreDates: number, places: number): string {
-  const dates = lang === "fr"
-    ? `+${moreDates} autre${moreDates > 1 ? "s" : ""} date${moreDates > 1 ? "s" : ""}`
-    : `+${moreDates} more date${moreDates > 1 ? "s" : ""}`;
-  if (places < 2) return dates;
-  return `${dates} · ${places} ${lang === "fr" ? "lieux" : "places"}`;
+/** "+4 dates" (other dates of a repeating activity). */
+export function seriesLabel(moreDates: number): string {
+  return `+${moreDates} date${moreDates > 1 ? "s" : ""}`;
 }
 
 export function showMoreLabel(n: number): string {
