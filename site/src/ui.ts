@@ -276,7 +276,7 @@ export function eventHref(id: string): string {
 export function thumbUrl(url: string | null): string | null {
   if (!url) return null;
   if (url.includes("res.cloudinary.com/")) {
-    return url.replace(/\/upload\/[^/]*c_l?fill[^/]*\//, "/upload/w_160,h_160,c_fill,g_auto/");
+    return url.replace(/\/upload\/[^/]*c_l?fill[^/]*\//, "/upload/w_256,h_144,c_fill,g_auto/");
   }
   if (url.includes("cdn.caligram.com/")) return url.replace(/\/(medium|xlarge|large)\//, "/thumbnail/");
   return url;
