@@ -305,8 +305,10 @@ export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   if (opts.series && opts.series.length > 1) bits.push(esc(seriesLabel(opts.series.length - 1)));
   const price = e.is_free ? "" : `<span class="ev-price">${esc(priceTag(e.price_min, e.price_max))}</span> `;
   const thumb = thumbUrl(e.image);
-  return `<div class="ev-item">
-    <a class="ev-row${opts.compact ? " compact" : ""}${thumb ? "" : " no-thumb"}" href="${eventHref(e.id)}" data-id="${e.id}">
+  // The title is the link, stretched over the whole row (CSS), so the heart
+  // beside it can be a real button (a button can't sit inside a link).
+  return `
+    <div class="ev-row${opts.compact ? " compact" : ""}${thumb ? "" : " no-thumb"}" data-id="${e.id}">
       <span class="ev-time">
         ${tc.kicker ? `<span class="ev-time-kicker">${esc(tc.kicker)}</span>` : ""}
         ${e.all_day && !e.multiDay
@@ -314,13 +316,14 @@ export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
           : `<span class="ev-time-main">${esc(tc.main)}</span>`}
       </span>
       <span class="ev-body">
-        <span class="ev-title">${esc(e.title)}</span>
+        <span class="ev-title-line">
+          <a class="ev-title" href="${eventHref(e.id)}">${esc(e.title)}</a>
+          ${likeButtonHtml(e)}
+        </span>
         <span class="ev-venue">${price}${bits.filter(Boolean).join(" · ")}</span>
       </span>
       ${thumb ? `<img class="ev-thumb" src="${esc(thumb)}" alt="" loading="lazy" decoding="async">` : ""}
-    </a>
-    ${likeButtonHtml(e)}
-  </div>`;
+    </div>`;
 }
 
 // ---------------------------------------------------------------- likes
@@ -328,7 +331,7 @@ export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
 /** Events that have a heart on the page, by like key (to toggle from a click). */
 const likeable = new Map<string, Ev>();
 
-/** The heart button. Its own element next to the row link (a button can't sit inside a link). */
+/** The heart button (on a row's title line, or in the event detail's header). */
 export function likeButtonHtml(e: Ev, extraClass = ""): string {
   const key = likeKey(e);
   likeable.set(key, e);
@@ -355,6 +358,7 @@ document.addEventListener("click", (ev) => {
 /** Clicking any [data-id] inside root opens that event (keeps normal link behaviour for modifier keys). */
 export function onEventClick(root: HTMLElement, open: (id: string) => void): void {
   root.addEventListener("click", (ev) => {
+    if ((ev.target as HTMLElement).closest("[data-like]")) return; // the heart, not the event
     const target = (ev.target as HTMLElement).closest<HTMLElement>("[data-id]");
     if (!target || !root.contains(target)) return;
     const me = ev as MouseEvent;
