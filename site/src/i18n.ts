@@ -34,7 +34,7 @@ const fr = {
   "nav.calendar": "Calendrier",
   "nav.map": "Carte",
   "lang.switch": "Switch to English",
-  "hero.title": "Des choses gratuites ou presque à faire à Montréal.",
+  "hero.title": "Des choses gratuites à faire.",
   "hero.sub":
     "Gratuit ou 10 $ et moins. Mis à jour chaque matin.",
   "search.label": "Rechercher des activités",
@@ -121,7 +121,7 @@ const en: Record<Key, string> = {
   "nav.calendar": "Calendar",
   "nav.map": "Map",
   "lang.switch": "Passer en français",
-  "hero.title": "Free & almost-free things to do in Montréal.",
+  "hero.title": "Free things to do.",
   "hero.sub":
     "Free or $10 and under. Updated every morning.",
   "search.label": "Search events",
