@@ -19,7 +19,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from .common import clean, http_get, http_get_retry, local_iso
+from .common import guess_category, http_get, http_get_retry, local_iso
 
 SOURCE_ID = "concordia"
 BASE = "https://www.concordia.ca"
@@ -33,20 +33,6 @@ MONTHS = {m: i for i, m in enumerate(
 # Two campuses: pins go on the campus (rooms don't have coordinates).
 SGW = {"lat": 45.4972, "lng": -73.5790, "borough": "Ville-Marie"}
 LOYOLA = {"lat": 45.4582, "lng": -73.6404, "borough": "Côte-des-Neiges–Notre-Dame-de-Grâce"}
-
-CATEGORY_RULES = [
-    (r"exhibit|vernissage|gallery|galerie|biennale", "exhibition"),
-    (r"concert|recital|music|choir|orchestra|jazz", "music"),
-    (r"film|screening|cin[ée]ma", "film"),
-    (r"danc", "dance"),
-    (r"theatre|theater|play\b", "theatre"),
-    (r"reading group|book|poetry|literat|writing", "books"),
-    (r"language|lounge|conversation", "languages"),
-    (r"yoga|mindful|meditat|wellness|well-being", "wellness"),
-    (r"workshop|atelier|craft|drawing|paint", "art-craft"),
-    (r"\bai\b|data|science|engineer|tech|comput|math", "science-tech"),
-    (r"histor|politic|society|citizen|immigra|indigenous|climate", "society-history"),
-]
 
 
 # --------------------------------------------------------------------------- parsing
@@ -127,14 +113,6 @@ def campus_for(where: str) -> dict | None:
     return SGW
 
 
-def category_for(*texts: str) -> str:
-    text = " ".join(t for t in texts if t)
-    for pattern, slug in CATEGORY_RULES:
-        if re.search(pattern, text, re.I):
-            return slug
-    return "other"
-
-
 def to_event(path: str, fields: dict) -> dict | None:
     title = fields.get("_title")
     when = parse_when(fields.get("Date & time", ""))
@@ -160,7 +138,7 @@ def to_event(path: str, fields: dict) -> dict | None:
         "price_max": hi,
         "price_label": "Gratuit" if hi == 0 else f"{lo:g} $ – {hi:g} $" if lo != hi else f"{lo:g} $",
         "is_free": hi == 0,
-        "category": category_for(title, organizer or ""),
+        "category": guess_category(title, organizer),
         "audience": "all",
         "format": "online" if online else "indoor",
         "registration": "required" if "register" in fields.get("Date & time", "").lower() else None,

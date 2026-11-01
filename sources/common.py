@@ -119,3 +119,44 @@ def extract_links(text: str) -> list[dict]:
                 "instagram" if "instagram.com" in host else "website")
         links.append({"type": kind, "url": url})
     return links
+
+
+def strip_html(text: str) -> str:
+    """HTML fragment -> plain text with paragraph breaks."""
+    import html as _html
+    text = re.sub(r"<br\s*/?>", "\n", text or "")
+    text = re.sub(r"</p>|</li>|</h\d>", "\n\n", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = _html.unescape(text).replace("\xa0", " ").replace("\u200b", "")
+    return re.sub(r"\n\s*\n+", "\n\n", text).strip()
+
+
+# Keyword -> category slug, French and English. The first match wins, so the
+# order matters (e.g. "Faculty of Arts" must not make a math talk "art-craft").
+CATEGORY_RULES = [
+    (r"exhibit|exposition|\bexpo\b|vernissage|gallery|galerie|biennale", "exhibition"),
+    (r"concert|r[ée]cital|music|musique|choir|chorale|orchestr|jazz", "music"),
+    (r"\bfilms?\b|screening|projection|cin[ée]", "film"),
+    (r"danc|danse", "dance"),
+    (r"th[ée][aâ]tre|theater", "theatre"),
+    (r"humour|comedy|stand-up", "comedy"),
+    (r"cirque|circus", "circus"),
+    (r"reading group|\bbooks?\b|livres?\b|po[ée]s|literat|litt[ée]rat|writing|[ée]criture", "books"),
+    (r"language|langues?\b|conversation", "languages"),
+    (r"yoga|mindful|pleine conscience|pr[ée]sence attentive|m[ée]ditat|wellness|bien-[êe]tre|well-being", "wellness"),
+    (r"\bsports?\b|sportive|volley|basket|hockey|soccer|natation|v[ée]lo|cycling|athl[ée]t|citadins|carabins", "sport-outdoors"),
+    (r"workshop|craft|drawing|dessin|paint|peinture|tricot|couture|bricolage", "art-craft"),
+    (r"\bia\b|\bai\b|data|donn[ée]es|science|engineer|ing[ée]ni|tech|comput|informatique|math|algorith", "science-tech"),
+    (r"histor|politi|society|soci[ée]t[ée]|citizen|citoyen|immigra|indigen|autochtone|climat|environnement|f[ée]minis|droit", "society-history"),
+    (r"f[êe]te|festival|march[ée]\b|market|foire|\bfair\b", "festival-market"),
+    (r"cuisine|cooking|culinaire", "cooking"),
+    (r"\bjeux?\b|\bgames?\b|[ée]checs|chess", "games"),
+]
+
+
+def guess_category(*texts: str | None) -> str:
+    text = " ".join(t for t in texts if t)
+    for pattern, slug in CATEGORY_RULES:
+        if re.search(pattern, text, re.I):
+            return slug
+    return "other"

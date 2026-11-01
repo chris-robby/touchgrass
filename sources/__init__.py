@@ -8,6 +8,6 @@
 To add a source: create sources/<name>.py with those functions and add it to
 ADAPTERS below. Nothing else in the pipeline needs to change.
 """
-from . import concordia, loisirs_montreal, ville_montreal
+from . import concordia, loisirs_montreal, udem, uqam, ville_montreal
 
-ADAPTERS = [ville_montreal, loisirs_montreal, concordia]
+ADAPTERS = [ville_montreal, loisirs_montreal, concordia, uqam, udem]

@@ -16,7 +16,7 @@ const fr = `
 
   <h2>D'où viennent les données?</h2>
   <p>Les activités proviennent des données ouvertes de la <strong>Ville de Montréal</strong>
-  (licence <a href="${LICENSE}">CC BY 4.0</a>) et du calendrier public de l'Université Concordia :</p>
+  (licence <a href="${LICENSE}">CC BY 4.0</a>) et des calendriers publics de Concordia, de l'UQAM et de l'Université de Montréal :</p>
   <ul>
     <li><a href="${DATASET}">Événements publics</a> — complétés par la page officielle de chaque
     activité sur <a href="https://montreal.ca/evenements">montreal.ca</a> (heures, lieux, annulations).</li>
@@ -24,6 +24,9 @@ const fr = `
     seulement les activités <strong>sans inscription</strong> dont le prix (gratuit ou 10 $ et moins) est indiqué.</li>
     <li><a href="https://www.concordia.ca/events.html">Événements de l'Université Concordia</a> — conférences,
     expositions, ateliers et spectacles ouverts au public, gratuits ou à 10 $ et moins (fiches en anglais).</li>
+    <li><a href="https://evenements.uqam.ca/">Événements de l'UQAM</a> et
+    <a href="https://calendrier.umontreal.ca/">calendrier de l'Université de Montréal</a> — conférences,
+    concerts, expositions, cinéma et ateliers ouverts au public, gratuits ou à 10 $ et moins.</li>
   </ul>
   <p>La liste est mise à jour automatiquement chaque matin. Les activités annulées, terminées
   ou plus chères que 10 $ sont retirées, tout comme les séances du conseil et les consultations publiques.
@@ -35,7 +38,7 @@ const fr = `
   c'est elle qui fait foi.</p>
 
   <h2>Crédits</h2>
-  <p>Données : Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Université Concordia (concordia.ca). Cartes : © les contributeurs d'OpenStreetMap.
+  <p>Données : Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Université Concordia, UQAM, Université de Montréal. Cartes : © les contributeurs d'OpenStreetMap.
   touchgrass n'est pas affilié à la Ville de Montréal.</p>`;
 
 const en = `
@@ -45,7 +48,7 @@ const en = `
 
   <h2>Where does the data come from?</h2>
   <p>Events come from the City of Montréal's open data (<strong>Ville de Montréal</strong>,
-  <a href="${LICENSE}">CC BY 4.0</a> licence) and Concordia University's public calendar:</p>
+  <a href="${LICENSE}">CC BY 4.0</a> licence) and the public calendars of Concordia, UQAM and Université de Montréal:</p>
   <ul>
     <li><a href="${DATASET}">Événements publics</a> (public events) — completed with each event's
     official page on <a href="https://montreal.ca/evenements">montreal.ca</a> (times, venues, cancellations).</li>
@@ -53,6 +56,9 @@ const en = `
     only <strong>drop-in</strong> activities whose price (free or $10 and under) is stated.</li>
     <li><a href="https://www.concordia.ca/events.html">Concordia University events</a> — public talks,
     exhibitions, workshops and performances that are free or $10 and under.</li>
+    <li><a href="https://evenements.uqam.ca/">UQAM events</a> and the
+    <a href="https://calendrier.umontreal.ca/">Université de Montréal calendar</a> — public talks,
+    concerts, exhibitions, films and workshops that are free or $10 and under.</li>
   </ul>
   <p>The list updates automatically every morning. Cancelled and past events, and anything over $10,
   are removed, as are council meetings and public consultations. Every event links to more
@@ -64,7 +70,7 @@ const en = `
   <p>Event titles and descriptions come from the city and are in French.</p>
 
   <h2>Credits</h2>
-  <p>Data: Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Concordia University (concordia.ca). Maps: © OpenStreetMap contributors.
+  <p>Data: Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Concordia University, UQAM, Université de Montréal. Maps: © OpenStreetMap contributors.
   touchgrass is not affiliated with the City of Montréal.</p>`;
 
 shell.main.innerHTML = `<article class="prose">${lang === "fr" ? fr : en}</article>`;
