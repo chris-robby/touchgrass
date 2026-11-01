@@ -5,6 +5,7 @@
   --ink: #13281e;
   --forest: #1f5a3a;
   --lime: #c8f169;
+  --heart: #c8433a;
   --paper: #eef2e6;
   --paper-raised: #f6f8f1;
   --paper-dim: #e8ede0;
@@ -246,6 +247,23 @@ main.wrap { padding-top: 8px; padding-bottom: 56px; }
 .ev-row.compact .ev-time { font-size: 17px; }
 .ev-row.compact .ev-title { font-size: 16px; }
 .ev-row.compact .ev-venue { font-size: 13px; }
+
+/* Heart: its own button at the right end of the row (a button can't sit inside the row link). */
+.ev-item { position: relative; }
+.ev-item > .ev-row { padding-right: 52px; }
+.like-btn {
+  width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: var(--muted);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ev-item > .like-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+.like-btn:hover { color: var(--heart); background: var(--paper-dim); }
+.like-btn[aria-pressed="true"] { color: var(--heart); }
+.like-btn[aria-pressed="true"] svg { fill: currentColor; }
+.like-btn.icon-btn { border: 1.5px solid var(--ink); }
+.liked-chip { display: inline-flex; align-items: center; gap: 6px; }
+.liked-chip svg { width: 16px; height: 16px; }
+.liked-chip[aria-pressed="true"] svg { fill: currentColor; }
+.part-foryou { color: var(--forest); }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 20px;
@@ -494,15 +512,17 @@ dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
 
   .day-heading { font-size: 24px; margin-top: 0; }
   .day-group { margin-top: 18px; }
-  .ev-row { grid-template-columns: 56px minmax(0, 1fr) 96px; gap: 12px; padding: 12px 0; }
+  .ev-row { grid-template-columns: 56px minmax(0, 1fr) 80px; gap: 12px; padding: 12px 0; }
   .ev-row.no-thumb { grid-template-columns: 56px minmax(0, 1fr); }
-  .ev-thumb { width: 96px; height: 54px; }
+  .ev-thumb { width: 80px; height: 45px; }
+  .ev-item > .ev-row { padding-right: 38px; }
+  .ev-item > .like-btn { width: 36px; height: 36px; right: -4px; }
   .ev-time { font-size: 17px; }
   .ev-title { font-size: 16px; }
   .ev-venue { font-size: 13px; }
-  .ev-row.compact { grid-template-columns: 52px minmax(0, 1fr) 96px; }
+  .ev-row.compact { grid-template-columns: 52px minmax(0, 1fr) 80px; }
   .ev-row.compact.no-thumb { grid-template-columns: 52px minmax(0, 1fr); }
-  .ev-row.compact .ev-thumb { width: 96px; height: 54px; }
+  .ev-row.compact .ev-thumb { width: 80px; height: 45px; }
   .day-heading { font-size: 24px; }
   .day-group { margin-top: 26px; }
   .detail-photo { height: 160px; }

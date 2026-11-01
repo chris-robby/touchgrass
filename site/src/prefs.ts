@@ -2,7 +2,8 @@
 // free only). Asked once on the first visit, editable from the search bar's
 // filter button, saved in this browser only (localStorage).
 //
-// Preferences narrow every view; ?all=1 in the URL ("Tout voir") ignores them.
+// Preferences never hide anything: matching events move up (prefsScore, used by
+// likes.ts's personalScore). matchesPrefs only counts matches for the panel.
 import type { Ev } from "./data";
 import { lang } from "./i18n";
 
@@ -105,6 +106,17 @@ export function matchesPrefs(e: Ev, p: Prefs = getPrefs()): boolean {
   // Online events are for everyone, wherever they live.
   if (boros && e.format !== "online" && !(e.borough && boros.has(e.borough))) return false;
   return true;
+}
+
+/** Ranking boost for an event: points for each preference group it matches. */
+export function prefsScore(e: Ev, p: Prefs = getPrefs()): number {
+  compile(p);
+  let s = 0;
+  if (cats?.has(e.category)) s += 2;
+  if (auds && e.audience && e.audience !== "all" && auds.has(e.audience)) s += 1;
+  if (boros && e.borough && boros.has(e.borough)) s += 1.5;
+  if (p.freeOnly && e.is_free) s += 0.5;
+  return s;
 }
 
 /** Short summary like "Spectacles & musique, Enfants & famille · Verdun · gratuit". */

@@ -8,12 +8,14 @@ import { openDetail, setSeriesLookup, syncDetail } from "../detail";
 import { emptyHtml, refreshForYou, setupForYou } from "../forYou";
 import { dayGroupLabel, fmtLongDate, fmtShortDate, hourOf } from "../format";
 import { countLabel, showMoreLabel, t } from "../i18n";
+import { rankDay } from "../likes";
 import {
   bindSearch, esc, eventRowHtml, onEventClick, renderFilterBar, renderShell, searchFieldHtml, updateNavLinks,
 } from "../ui";
 
 const PAGE_SIZE = 60;
 const PARTS_MIN_ROWS = 12; // only busy days get Morning/Afternoon/Evening
+const TOP_PER_DAY = 6; // personal matches shown first each day; the rest keep their time order
 
 const shell = renderShell("list");
 let f: Filters = readFilters();
@@ -103,32 +105,38 @@ function start(events: Ev[]): void {
     let html = "";
     for (const day of days) {
       if (shown >= limit) break;
-      const list = groups.get(day)!.sort(byDisplayOrder).slice(0, limit - shown);
+      const [top, rest] = rankDay(groups.get(day)!.sort(byDisplayOrder), TOP_PER_DAY);
+      const list = [...top, ...rest].slice(0, limit - shown);
       shown += list.length;
       const label = dayGroupLabel(day);
       const isNamed = label === t("day.today") || label === t("day.tomorrow");
       html += `
         <section class="day-group">
           <h2 class="day-heading">${esc(label)} <span class="kicker">${esc(isNamed ? fmtLongDate(day) : fmtShortDate(day))}</span></h2>
-          ${dayRowsHtml(list, series)}
+          ${dayRowsHtml(list.slice(0, top.length), list.slice(top.length), series)}
         </section>`;
     }
-    groupsEl.innerHTML = html || emptyHtml(f);
+    groupsEl.innerHTML = html || emptyHtml();
     const left = rows.length - shown;
     moreBtn.hidden = left <= 0;
     moreBtn.textContent = showMoreLabel(left);
   }
 
-  /** Rows of one day; long days get Morning / Afternoon / Evening sub-headings. */
-  function dayRowsHtml(list: Ev[], series: Map<string, Ev[]>): string {
+  /** Rows of one day: personal matches first ("For you"), then the rest in time
+   *  order, with Morning / Afternoon / Evening sub-headings on long days. */
+  function dayRowsHtml(top: Ev[], list: Ev[], series: Map<string, Ev[]>): string {
     const row = (e: Ev) => eventRowHtml(e, { series: e.multiDay ? undefined : series.get(seriesKey(e)) });
-    if (list.length < PARTS_MIN_ROWS) return list.map(row).join("");
+    let html = top.length ? `<h3 class="part-heading part-foryou">${t("part.foryou")}</h3>${top.map(row).join("")}` : "";
+    if (list.length < PARTS_MIN_ROWS) {
+      // After a "For you" block, a plain heading says where the time order starts again.
+      if (top.length && list.length) html += `<h3 class="part-heading">${t("part.others")}</h3>`;
+      return html + list.map(row).join("");
+    }
     const part = (e: Ev) => {
       if (e.multiDay || e.all_day) return "part.allday";
       const h = hourOf(e.startMs);
       return h < 12 ? "part.morning" : h < 17 ? "part.afternoon" : "part.evening";
     };
-    let html = "";
     let current = "";
     for (const e of list) {
       const p = part(e);

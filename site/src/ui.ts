@@ -2,6 +2,7 @@
 import { Ev, Filters, filterQuery, hasActiveFilters, loadMeta } from "./data";
 import { fmtUpdated, timeColumn } from "./format";
 import { categoryLabel, categorySlugs, lang, priceTag, seriesLabel, setLang, t } from "./i18n";
+import { isLiked, likeKey, toggleLike } from "./likes";
 
 export type Page = "list" | "calendar" | "map" | "about";
 
@@ -20,6 +21,7 @@ export const icons = {
   list: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>`,
   calendar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>`,
   sliders: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>`,
+  heart: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-9.2-9.4C1.7 7.4 3.9 4 7.3 4c2 0 3.6 1.1 4.7 2.7C13.1 5.1 14.7 4 16.7 4c3.4 0 5.6 3.4 4.5 6.6C19.5 15.4 12 20 12 20z"/></svg>`,
   pin: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
 };
 
@@ -144,7 +146,7 @@ export interface FilterBarOptions {
 }
 
 export const NO_FILTERS: Filters = {
-  q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false, free: false, all: false,
+  q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false, free: false, liked: false,
 };
 
 /**
@@ -177,6 +179,7 @@ export function renderFilterBar(
         <div class="btn-group" role="group" aria-label="${t("access")}">
           <button type="button" class="chip-btn" data-toggle="free" aria-pressed="${f.free}">${esc(t("free"))}</button>
           <button type="button" class="chip-btn" data-toggle="dropin" aria-pressed="${f.dropin}">${esc(t("dropin"))}</button>
+          <button type="button" class="chip-btn liked-chip" data-toggle="liked" aria-pressed="${f.liked}">${icons.heart}${esc(t("liked"))}</button>
         </div>
         <span class="divider" aria-hidden="true"></span>
         <label class="select-label"><span class="sr-only">${t("category")}</span>
@@ -215,7 +218,7 @@ export function renderFilterBar(
 
   root.querySelectorAll<HTMLButtonElement>("[data-toggle]").forEach((btn) =>
     btn.addEventListener("click", () => {
-      const key = btn.dataset.toggle as "free" | "dropin";
+      const key = btn.dataset.toggle as "free" | "dropin" | "liked";
       const on = !get()[key];
       btn.setAttribute("aria-pressed", String(on));
       emit({ [key]: on });
@@ -290,8 +293,9 @@ export interface RowOptions {
 
 /**
  * One event in a list: kept deliberately quiet — the start time, the title, a
- * single grey line (place · borough · access · other dates) and a small photo.
- * Category, end time and the full price details are in the event's detail view.
+ * single grey line (place · borough · access · other dates), a small photo and
+ * a heart. Category, end time and the full price details are in the event's
+ * detail view.
  */
 export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   const tc = timeColumn(e);
@@ -301,7 +305,7 @@ export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   if (opts.series && opts.series.length > 1) bits.push(esc(seriesLabel(opts.series.length - 1)));
   const price = e.is_free ? "" : `<span class="ev-price">${esc(priceTag(e.price_min, e.price_max))}</span> `;
   const thumb = thumbUrl(e.image);
-  return `
+  return `<div class="ev-item">
     <a class="ev-row${opts.compact ? " compact" : ""}${thumb ? "" : " no-thumb"}" href="${eventHref(e.id)}" data-id="${e.id}">
       <span class="ev-time">
         ${tc.kicker ? `<span class="ev-time-kicker">${esc(tc.kicker)}</span>` : ""}
@@ -314,8 +318,39 @@ export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
         <span class="ev-venue">${price}${bits.filter(Boolean).join(" · ")}</span>
       </span>
       ${thumb ? `<img class="ev-thumb" src="${esc(thumb)}" alt="" loading="lazy" decoding="async">` : ""}
-    </a>`;
+    </a>
+    ${likeButtonHtml(e)}
+  </div>`;
 }
+
+// ---------------------------------------------------------------- likes
+
+/** Events that have a heart on the page, by like key (to toggle from a click). */
+const likeable = new Map<string, Ev>();
+
+/** The heart button. Its own element next to the row link (a button can't sit inside a link). */
+export function likeButtonHtml(e: Ev, extraClass = ""): string {
+  const key = likeKey(e);
+  likeable.set(key, e);
+  const on = isLiked(e);
+  return `<button type="button" class="like-btn${extraClass ? ` ${extraClass}` : ""}" data-like="${esc(key)}" aria-pressed="${on}"
+    aria-label="${esc(`${t(on ? "unlike" : "like")} — ${e.title}`)}">${icons.heart}</button>`;
+}
+
+// One handler for every heart on the page, including ones rendered later. The
+// list isn't re-sorted right away (rows jumping under the finger); the new order
+// shows on the next filter change or visit.
+document.addEventListener("click", (ev) => {
+  const btn = (ev.target as HTMLElement).closest<HTMLButtonElement>("[data-like]");
+  const e = btn && likeable.get(btn.dataset.like!);
+  if (!btn || !e) return;
+  const on = toggleLike(e);
+  document.querySelectorAll<HTMLButtonElement>("[data-like]").forEach((b) => {
+    if (b.dataset.like !== btn.dataset.like) return;
+    b.setAttribute("aria-pressed", String(on));
+    b.setAttribute("aria-label", `${t(on ? "unlike" : "like")} — ${e.title}`);
+  });
+});
 
 /** Clicking any [data-id] inside root opens that event (keeps normal link behaviour for modifier keys). */
 export function onEventClick(root: HTMLElement, open: (id: string) => void): void {

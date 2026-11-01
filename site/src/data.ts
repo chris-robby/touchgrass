@@ -1,6 +1,6 @@
 // Loading events.json, date helpers (all in Montréal time), filters and URL state.
 import { categoryLabel } from "./i18n";
-import { matchesPrefs } from "./prefs";
+import { isLiked } from "./likes";
 
 export const TZ = "America/Toronto";
 
@@ -148,7 +148,7 @@ export interface Filters {
   boro: string;
   dropin: boolean;
   free: boolean;
-  all: boolean; // true = ignore the visitor's saved preferences ("Tout voir")
+  liked: boolean; // only events the visitor liked
 }
 
 /** The [first, last] day the "When" filter covers, or null for "any time". */
@@ -180,7 +180,7 @@ export function matches(e: Ev, f: Filters, range: [string, string] | null): bool
   if (f.boro && e.borough !== f.boro) return false;
   if (f.dropin && e.registration !== "drop-in") return false;
   if (f.free && !e.is_free) return false;
-  if (!f.all && !matchesPrefs(e)) return false;
+  if (f.liked && !isLiked(e)) return false;
   if (f.q) {
     for (const word of normalize(f.q).split(/\s+/)) {
       if (word && !e.haystack.includes(word)) return false;
@@ -190,7 +190,7 @@ export function matches(e: Ev, f: Filters, range: [string, string] | null): bool
 }
 
 export function hasActiveFilters(f: Filters): boolean {
-  return Boolean(f.q || f.when || f.cat || f.boro || f.dropin || f.free);
+  return Boolean(f.q || f.when || f.cat || f.boro || f.dropin || f.free || f.liked);
 }
 
 // ---------------------------------------------------------------- URL state
@@ -213,7 +213,7 @@ export function readFilters(): Filters {
     boro: p.get("boro") ?? "",
     dropin: p.get("dropin") === "1",
     free: p.get("free") === "1",
-    all: p.get("all") === "1",
+    liked: p.get("liked") === "1",
   };
 }
 
@@ -239,7 +239,7 @@ export function filtersToParams(f: Filters): Record<string, string | boolean> {
   const custom = f.when === "custom";
   return {
     q: f.q, when: f.when, from: custom ? f.from : "", to: custom ? f.to : "",
-    cat: f.cat, boro: f.boro, dropin: f.dropin, free: f.free, all: f.all,
+    cat: f.cat, boro: f.boro, dropin: f.dropin, free: f.free, liked: f.liked,
   };
 }
 

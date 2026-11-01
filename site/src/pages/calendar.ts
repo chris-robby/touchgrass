@@ -9,12 +9,14 @@ import { openDetail, setSeriesLookup, syncDetail } from "../detail";
 import { refreshForYou, setupForYou } from "../forYou";
 import { chipTime, fmtLongDate, fmtMonth, weekdayShort } from "../format";
 import { countLabel, moreLabel, t } from "../i18n";
+import { rankDay } from "../likes";
 import {
   esc, eventHref, eventRowHtml, icons, onEventClick, renderFilterBar, renderShell, updateNavLinks,
 } from "../ui";
 
 const CHIPS_PER_CELL = 2;
 const DOTS_PER_CELL = 3;
+const TOP_PER_DAY = 4; // personal matches shown first in the day panel
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const MONTH_RE = /^\d{4}-\d{2}$/;
 
@@ -170,7 +172,16 @@ function start(events: Ev[]): void {
     const dayList = byDay.get(selected) ?? [];
     panelEl.innerHTML = `
       <h2 class="panel-heading"><span class="kicker">${esc(countLabel(dayList.length))}</span>${esc(fmtLongDate(selected))}</h2>
-      ${dayList.length ? dayList.map((e) => eventRowHtml(e, { compact: true })).join("") : `<p class="empty">${t("empty.day")}</p>`}`;
+      ${dayList.length ? dayPanelRows(dayList) : `<p class="empty">${t("empty.day")}</p>`}`;
+  }
+
+  /** The selected day's events: personal matches first, then the rest in time order. */
+  function dayPanelRows(list: Ev[]): string {
+    const row = (e: Ev) => eventRowHtml(e, { compact: true });
+    const [top, rest] = rankDay(list, TOP_PER_DAY);
+    if (!top.length) return list.map(row).join("");
+    return `<h3 class="part-heading part-foryou">${t("part.foryou")}</h3>${top.map(row).join("")}`
+      + (rest.length ? `<h3 class="part-heading">${t("part.others")}</h3>${rest.map(row).join("")}` : "");
   }
 
   render();

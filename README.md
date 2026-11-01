@@ -113,18 +113,26 @@ tiles, no API key). Design follows `touchgrass-handoff/DESIGN.md`.
   details are in the event detail, which opens with the event photo. An activity that
   repeats (same title) is shown once, at its next date, with "+N dates"; the detail
   lists the other dates. Only busy days (12+ rows) get Morning / Afternoon / Evening
-  headings. The map has its own page, so the list keeps a comfortable reading width.
+  headings. The map has its own page, so the list uses the full width.
 - **"For you" preferences** (`src/prefs.ts`, `src/forYou.ts`): on the first visit a panel
   asks what the visitor is into — 8 interest groups (each covering several of the 24
   categories), who it's for (adults / kids & family / teens / seniors), boroughs, free
-  only — with a live count. Answers are saved in the browser (localStorage) and narrow
-  the list, calendar and map. A bar above the results shows what's applied, with
-  "Edit" and "See everything" (`?all=1`). The filter button inside the search bar
-  reopens the panel; its badge shows how many preferences are on. Online events stay
-  visible whatever boroughs are chosen.
-- **Filters** (date, free only, drop-in only, 24 categories, borough, search) live in the URL, so
-  any view can be shared; the List/Calendar/Map links keep them. They stack on top of
-  the preferences.
+  only — with a live count of matches. Answers are saved in the browser (localStorage).
+  They **never hide events**: matching ones move up (see ranking below). A bar above the
+  results shows what goes first, with "Edit". The filter button inside the search bar
+  reopens the panel; its badge shows how many preferences are on.
+- **Likes** (`src/likes.ts`): a heart on every row and in the event detail. A like covers
+  every date of an activity (same title) and is saved in the browser only. The "Liked"
+  filter shows them all.
+- **Ranking**: each day starts with up to 6 "For you" rows (4 in the calendar's day
+  panel), then everything else in time order. The score adds preference matches to
+  similarity with liked events (category, venue, borough, audience, title words). Likes
+  fade over time (half weight after 30 days) and count less while there are fewer than 3.
+  The top is kept varied: each pick of a category makes the next one of it rank lower.
+  Hearts don't re-sort the list on the spot; the new order shows on the next render.
+- **Filters** (date, free only, drop-in only, liked, 24 categories, borough, search) live
+  in the URL, so any view can be shared; the List/Calendar/Map links keep them. Unlike
+  preferences and likes, filters do hide events.
 - **Event detail** is a `<dialog>` (bottom sheet on phones) with price, the official page
   link, a **"Learn more"** list (organizer website / Facebook / phone found in the data,
   Google Maps directions, a Google search) and the source, plus a `.ics` download and a

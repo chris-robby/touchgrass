@@ -8,7 +8,7 @@ import { Ev, param, setParams } from "./data";
 import { chipTime, fmtShortDate, whenText } from "./format";
 import { audienceLabel, categoryLabel, lang, money, SOURCE_NAMES, t } from "./i18n";
 import { addPin, createMap } from "./map";
-import { esc, icons, tagsHtml } from "./ui";
+import { esc, icons, likeButtonHtml, tagsHtml } from "./ui";
 
 /** A wide version of the event photo for the top of the detail view. */
 function bannerUrl(url: string): string {
@@ -142,6 +142,7 @@ export function openDetail(e: Ev, push = true): void {
           <div class="detail-tags">${tagsHtml(e)}<span class="ev-cat">${esc(categoryLabel(e.category))}</span></div>
           <h2 id="detail-title">${esc(e.title)}</h2>
         </div>
+        ${likeButtonHtml(e, "icon-btn")}
         <button type="button" class="icon-btn close-btn" aria-label="${t("detail.close")}">${icons.close}</button>
       </div>
       <dl class="facts">
