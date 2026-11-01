@@ -2,6 +2,7 @@
 import { Ev, Filters, filterQuery, hasActiveFilters, loadMeta } from "./data";
 import { fmtUpdated, timeColumn } from "./format";
 import { categoryLabel, categorySlugs, lang, priceTag, seriesLabel, setLang, t } from "./i18n";
+import { aboutHref, CITIES, city, cityHref, cityLabel, rootPath } from "./city";
 import { isLiked, likeKey, toggleLike } from "./likes";
 
 export type Page = "list" | "calendar" | "map" | "about";
@@ -40,15 +41,19 @@ export interface Shell {
 /** Builds the page frame. The language button reloads the page in the other language. */
 export function renderShell(page: Page): Shell {
   const navLinks = (cls: string, withIcons: boolean) =>
-    PAGES.map((p) => `<a class="${cls}" data-nav="${p.file}" href="${p.file}"${p.page === page ? ' aria-current="page"' : ""}>${withIcons ? p.icon : ""}${esc(p.label())}</a>`).join("");
+    PAGES.map((p) => `<a class="${cls}" data-nav="${cityHref(city, p.file)}" href="${cityHref(city, p.file)}"${p.page === page ? ' aria-current="page"' : ""}>${withIcons ? p.icon : ""}${esc(p.label())}</a>`).join("");
+  // City switcher: each city's list page (filters don't carry over: boroughs differ).
+  const cityLinks = CITIES.map((c) =>
+    `<a class="city-link" href="${cityHref(c, "index.html")}" aria-label="${esc(c.name)}"${c.id === city.id ? ' aria-current="true"' : ""}><span class="wide-only">${esc(c.name)}</span><span class="narrow-only">${esc(c.short)}</span></a>`).join("");
 
   document.body.innerHTML = `
     <a class="skip-link" href="#main">${lang === "fr" ? "Aller au contenu" : "Skip to content"}</a>
     <header class="site-header">
       <div class="wrap topbar">
-        <a class="logo" href="index.html" data-nav="index.html">${icons.logo}<span>touchgrass</span></a>
+        <a class="logo" href="${cityHref(city, "index.html")}" data-nav="${cityHref(city, "index.html")}">${icons.logo}<span>touchgrass</span></a>
         <nav class="views" aria-label="${t("nav.views")}">${navLinks("view-link", false)}</nav>
         <div class="topbar-end">
+          <nav class="city-switch" aria-label="${lang === "fr" ? "Ville" : "City"}">${cityLinks}</nav>
           <button type="button" class="btn-dark lang-btn" aria-label="${t("lang.switch")}">
             <span${lang === "fr" ? ' class="on"' : ""}>FR</span> / <span${lang === "en" ? ' class="on"' : ""}>EN</span>
           </button>
@@ -61,9 +66,9 @@ export function renderShell(page: Page): Shell {
     <footer class="site-footer">
       <div class="wrap footer-inner">
         <span class="footer-logo">touchgrass</span>
-        <span>${esc(t("footer.data"))}</span>
+        <span>${esc(cityLabel(city.dataCredit))}</span>
         <span class="footer-updated"></span>
-        <a href="about.html">${esc(t("footer.about"))}</a>
+        <a href="${aboutHref()}">${esc(t("footer.about"))}</a>
       </div>
     </footer>
     <nav class="bottom-nav" aria-label="${t("nav.views")}">${navLinks("bottom-link", true)}</nav>
@@ -73,7 +78,7 @@ export function renderShell(page: Page): Shell {
   const titles: Record<Page, string> = {
     list: t("hero.title").replace(/\.$/, ""), calendar: t("nav.calendar"), map: t("nav.map"), about: t("about.title"),
   };
-  document.title = `${titles[page]} — touchgrass`;
+  document.title = page === "about" ? `${titles[page]} — touchgrass` : `${titles[page]} · ${city.name} — touchgrass`;
 
   document.querySelector(".lang-btn")!.addEventListener("click", () => {
     setLang(lang === "fr" ? "en" : "fr");
@@ -98,7 +103,8 @@ export function renderShell(page: Page): Shell {
 /** Makes the site installable and usable offline (production build only). */
 function registerServiceWorker(): void {
   if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.register("sw.js").catch((err) => console.warn("Service worker:", err));
+  // One worker at the site root serves every city's pages (ottawa/ included).
+  navigator.serviceWorker.register(`${rootPath}sw.js`).catch((err) => console.warn("Service worker:", err));
 }
 
 /** A small band under the header while the phone is offline. */
@@ -188,9 +194,9 @@ export function renderFilterBar(
             ${cats.map((c) => `<option value="${c}"${c === f.cat ? " selected" : ""}>${esc(categoryLabel(c))}</option>`).join("")}
           </select>
         </label>
-        <label class="select-label"><span class="sr-only">${t("borough")}</span>
+        <label class="select-label"><span class="sr-only">${esc(cityLabel(city.area))}</span>
           <select name="boro">
-            <option value="">${t("borough.allLong")}</option>
+            <option value="">${esc(cityLabel(city.areaAll))}</option>
             ${opts.boroughs.map((b) => `<option${b === f.boro ? " selected" : ""}>${esc(b)}</option>`).join("")}
           </select>
         </label>

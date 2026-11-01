@@ -2,16 +2,17 @@
 // maison de la culture, so one pin per event would just stack up).
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { city, cityHref } from "./city";
 import { byDisplayOrder, Ev } from "./data";
 import { chipTime, fmtShortDate } from "./format";
 import { countLabel, lang, t } from "./i18n";
 import { esc } from "./ui";
 
-const MONTREAL: L.LatLngTuple = [45.54, -73.66];
+
 const MAX_IN_POPUP = 8;
 
 export function createMap(el: HTMLElement, opts: { scrollWheelZoom?: boolean } = {}): L.Map {
-  const map = L.map(el, { scrollWheelZoom: opts.scrollWheelZoom ?? true }).setView(MONTREAL, 11);
+  const map = L.map(el, { scrollWheelZoom: opts.scrollWheelZoom ?? true }).setView(city.center, city.zoom);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -43,7 +44,7 @@ function popupHtml(events: Ev[]): string {
   }).join("");
   const rest = events.length - MAX_IN_POPUP;
   const more = rest > 0
-    ? `<a class="pop-more" href="index.html?q=${encodeURIComponent(first.venue ?? "")}">${lang === "fr" ? `Voir les ${events.length} dans la liste` : `See all ${events.length} in the list`}</a>`
+    ? `<a class="pop-more" href="${cityHref(city, "index.html")}?q=${encodeURIComponent(first.venue ?? "")}">${lang === "fr" ? `Voir les ${events.length} dans la liste` : `See all ${events.length} in the list`}</a>`
     : "";
   return `
     <div class="pop">

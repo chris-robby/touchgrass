@@ -7,6 +7,7 @@ import type L from "leaflet";
 import { Ev, param, setParams } from "./data";
 import { chipTime, fmtShortDate, whenText } from "./format";
 import { audienceLabel, categoryLabel, lang, money, SOURCE_NAMES, t } from "./i18n";
+import { city, cityLabel } from "./city";
 import { addPin, createMap } from "./map";
 import { esc, icons, likeButtonHtml, tagsHtml } from "./ui";
 
@@ -107,10 +108,10 @@ function learnMoreHtml(e: Ev): string {
   }));
   const place = [e.venue, e.address].filter(Boolean).join(", ");
   if (place || e.lat != null) {
-    const query = place ? `${place}, Montréal` : `${e.lat},${e.lng}`;
+    const query = place ? `${place}, ${city.name}` : `${e.lat},${e.lng}`;
     items.push({ href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, label: t("detail.maps"), kind: "maps" });
   }
-  const q = [e.title, e.venue ?? "", "Montréal"].filter(Boolean).join(" ");
+  const q = [e.title, e.venue ?? "", city.name].filter(Boolean).join(" ");
   items.push({ href: `https://www.google.com/search?q=${encodeURIComponent(q)}`, label: t("detail.search"), kind: "search" });
 
   return `
@@ -148,7 +149,7 @@ export function openDetail(e: Ev, push = true): void {
       <dl class="facts">
         <dt>${t("detail.when")}</dt><dd class="strong">${esc(whenText(e))}</dd>
         <dt>${t("detail.where")}</dt><dd><span class="strong">${esc(where)}</span>${e.address ? `<br><span class="muted">${esc(e.address)}</span>` : ""}</dd>
-        <dt>${t("detail.borough")}</dt><dd>${esc(e.borough ?? "—")}</dd>
+        <dt>${esc(cityLabel(city.area))}</dt><dd>${esc(e.borough ?? "—")}</dd>
         <dt>${t("detail.for")}</dt><dd>${esc(audienceLabel(e.audience))}</dd>
         <dt>${t("detail.price")}</dt><dd>${esc(priceText(e))}</dd>
         <dt>${t("detail.access")}</dt><dd>${esc(accessText(e))}</dd>

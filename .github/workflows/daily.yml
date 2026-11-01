@@ -42,6 +42,7 @@ jobs:
           path: |
             data/cache
             data/meta.json
+            data/*/meta.json
           key: data-${{ github.run_id }}
           restore-keys: data-
 

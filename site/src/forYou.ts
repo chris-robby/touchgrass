@@ -2,6 +2,7 @@
 // filter button in the search bar), and the bar above results that says what
 // goes first, with "Edit". Preferences only reorder: every event stays listed.
 import type { Ev, Filters } from "./data";
+import { city } from "./city";
 import { countLabel, lang, t } from "./i18n";
 import {
   AUDIENCES, getPrefs, INTERESTS, label, matchesPrefs, Prefs, prefsCount, prefsSeen, prefsSummary, savePrefs,
@@ -19,7 +20,7 @@ const T = {
   interests: fr ? "Intérêts" : "Interests",
   forWhom: fr ? "Pour qui?" : "Who's it for?",
   where: fr ? "Où?" : "Where?",
-  whereHint: fr ? "Laissez vide pour tout Montréal." : "Leave empty for all of Montréal.",
+  whereHint: fr ? `Laissez vide pour tout ${city.name}.` : `Leave empty for all of ${city.name}.`,
   price: fr ? "Prix" : "Price",
   freeOnly: fr ? "Gratuit seulement" : "Free only",
   save: fr ? "Voir les activités" : "See events",

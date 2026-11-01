@@ -1,13 +1,14 @@
 """Helpers shared by the source adapters."""
 from __future__ import annotations
 
+import html
 import re
 import time
 import unicodedata
 import urllib.request
 from datetime import date, datetime, timedelta
 
-USER_AGENT = "TouchGrass/0.1 (free Montreal events listing; uses montreal.ca open data)"
+USER_AGENT = "TouchGrass/0.1 (free events listing; https://chris-robby.github.io/touchgrass/)"
 
 # The 19 boroughs, spelled as in the Ville de Montréal events dataset.
 BOROUGHS = [
@@ -144,7 +145,7 @@ CATEGORY_RULES = [
     (r"reading group|\bbooks?\b|livres?\b|po[ée]s|literat|litt[ée]rat|writing|[ée]criture", "books"),
     (r"language|langues?\b|conversation", "languages"),
     (r"yoga|mindful|pleine conscience|pr[ée]sence attentive|m[ée]ditat|wellness|bien-[êe]tre|well-being", "wellness"),
-    (r"\bsports?\b|sportive|volley|basket|hockey|soccer|natation|v[ée]lo|cycling|athl[ée]t|citadins|carabins", "sport-outdoors"),
+    (r"\bsports?\b|sportive|volley|basket|hockey|soccer|natation|\bv[ée]lo\b|cycling|athl[ée]t|citadins|carabins", "sport-outdoors"),
     (r"workshop|craft|drawing|dessin|paint|peinture|tricot|couture|bricolage", "art-craft"),
     (r"\bia\b|\bai\b|data|donn[ée]es|science|engineer|ing[ée]ni|tech|comput|informatique|math|algorith", "science-tech"),
     (r"histor|politi|society|soci[ée]t[ée]|citizen|citoyen|immigra|indigen|autochtone|climat|environnement|f[ée]minis|droit", "society-history"),
@@ -160,3 +161,39 @@ def guess_category(*texts: str | None) -> str:
         if re.search(pattern, text, re.I):
             return slug
     return "other"
+
+
+def category_for(title: str, description: str) -> str:
+    """The title decides when it can; the description only as a fallback (a talk
+    described as "a conversation with…" is not a language group)."""
+    slug = guess_category(title)
+    return slug if slug != "other" else guess_category(description[:300])
+
+
+# Stated prices (Ottawa universities: no price field, or often empty).
+_PRICE_AMOUNT = re.compile(r"\$\s*(\d+(?:[.,]\d{1,2})?)|(\d+(?:[.,]\d{1,2})?)\s*\$")
+_FREE_COST_RE = re.compile(r"^\s*(free|gratuit[e]?|0|\$?\s*0(?:\.00)?|no charge|none)\s*$", re.I)
+_FREE_TEXT_RE = re.compile(r"free (?:admission|entry|event|of charge|and open|to attend)|admission is free|"
+                        r"(?:is|are) free\b|entr[ée]e (?:libre|gratuite)|\bgratuit", re.I)
+
+
+def stated_price(cost: str, text: str) -> tuple[float, float] | None:
+    """(min, max) from a cost field, else from the description; None if not stated.
+
+    Used where sources have no price field or often leave it empty: only an explicit
+    "free" counts, and a dollar amount anywhere in the text (without a cost field)
+    is too ambiguous, so the event is skipped rather than guessed.
+    """
+    cost = html.unescape(cost or "").strip()
+    if cost:
+        if _FREE_COST_RE.match(cost):
+            return (0.0, 0.0)
+        amounts = [float((a or b).replace(",", ".")) for a, b in _PRICE_AMOUNT.findall(cost)]
+        if amounts:
+            return (min(amounts), max(amounts))
+        if re.search(r"\bfree\b", cost, re.I):
+            return (0.0, 0.0)
+        return None
+    if _PRICE_AMOUNT.search(text):
+        return None  # a price somewhere in the text, but not clearly the admission
+    return (0.0, 0.0) if _FREE_TEXT_RE.search(text) else None

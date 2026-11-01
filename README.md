@@ -1,12 +1,16 @@
-# TouchGrass — free & almost-free events in Montréal
+# TouchGrass — free & almost-free events in Montréal and Ottawa
 
-A website listing **free and $10-and-under** things to do in Montréal, rebuilt
-automatically every day from the city's open data.
+A website listing **free and $10-and-under** things to do in Montréal and Ottawa,
+rebuilt automatically every day from open data. Each city has its own pages
+(Montréal at the site root, Ottawa in `/ottawa/`) and its own data file, so events
+never mix.
 
 > Données : Ville de Montréal ([Événements publics](https://donnees.montreal.ca/dataset/evenements-publics),
 > [Programmation de sports et loisirs](https://donnees.montreal.ca/dataset/programmation-sports-loisirs-montreal)), CC BY 4.0;
 > [Université Concordia](https://www.concordia.ca/events.html), [UQAM](https://evenements.uqam.ca/),
 > [Université de Montréal](https://calendrier.umontreal.ca/).
+> Contains information licensed under the Open Data Licence – City of Ottawa
+> ([Library Programs and Events Feed](https://open.ottawa.ca/documents/ottawa::library-programs-and-events-feed)).
 
 ## Sources
 
@@ -17,6 +21,9 @@ automatically every day from the city's open data.
 | Programmation de sports et loisirs (Loisirs Montréal, JSON, daily) | [dataset](https://donnees.montreal.ca/dataset/programmation-sports-loisirs-montreal) · [loisirs.montreal.ca](https://loisirs.montreal.ca/) | Drop-in sports & leisure (free skating, free swim, drop-in hockey…) whose price is stated and ≤ $10 |
 | Concordia University events (event pages) | [concordia.ca/events](https://www.concordia.ca/events.html) | Public talks, exhibitions, workshops, performances; ~90% free. Pages are cached; robots.txt allows current event pages |
 | UQAM events (Caligram JSON API) | [evenements.uqam.ca](https://evenements.uqam.ca/) | Public events with a price type (`FREE` / listed prices); general-public rate used; next 60 days |
+| **Ottawa:** Ottawa Public Library programs (City of Ottawa open data: RSS feed + program pages) | [feed](https://open.ottawa.ca/documents/ottawa::library-programs-and-events-feed) · [booking.biblioottawalibrary.ca](https://booking.biblioottawalibrary.ca/) | Storytimes, book clubs, games, workshops (free). The feed covers ~2 days; each program's page lists all its sessions, and programs stay cached until their last session, so after a week of daily runs every weekly program is known. 10 s between requests (robots.txt); branch pins from the city's library locations dataset |
+| **Ottawa:** Carleton University events (WordPress REST API, `cu_event`) | [events.carleton.ca](https://events.carleton.ca/) | Public talks, exhibitions, symposia. Only a stated price counts: the cost field ("Free", "$150") or, when empty, an explicit "free" in the description (most entries leave the cost empty, so few qualify). On-campus pins at the campus |
+| **Ottawa:** University of Ottawa events (event pages) | [uottawa.ca/en/events-all](https://www.uottawa.ca/en/events-all) | Only events whose audience includes the **general public** (most are for students/staff) and that say they're free. Weekly ("Every Tuesday"), nightly runs and all-day exhibitions handled; 1 request/second |
 | Université de Montréal calendar (official RSS + activity pages) | [calendrier.umontreal.ca](https://calendrier.umontreal.ca/) | Talks, concerts, exhibitions, films; price, place and exact coordinates read from each page (1 request/second, as robots.txt asks); daily exhibitions merged into one listing; full/cancelled dropped |
 
 Checked and **not** used (Oct 2026):
@@ -47,13 +54,15 @@ Checked and **not** used (Oct 2026):
 every push to `main`, and on demand (Actions tab → "Daily build & deploy" → Run workflow):
 
 1. run the Python tests
-2. `python scripts/build_data.py` — fetch every source + build `data/events.json`
+2. `python scripts/build_data.py` — fetch every source + build each city's data
+   (`data/events.json` for Montréal, `data/ottawa/events.json` for Ottawa)
 3. build the site (`site/dist/`)
 4. deploy to GitHub Pages
 
 If any step fails — download error, zero events, event count less than half of the
 previous build, failing tests — **nothing is deployed**, the live site keeps
-yesterday's data, and GitHub emails you about the failed run.
+yesterday's data, and GitHub emails you about the failed run. A city that fails keeps
+its previous files and doesn't stop the other city from being built.
 
 **Why GitHub Pages:** free, and the code, the daily job and the hosting all live in one
 place with no extra account. (Cloudflare Pages is the alternative if you ever want a
@@ -80,7 +89,8 @@ previous `meta.json` in the GitHub Actions cache. Locally, run `build_data.py` o
 Needs Python 3.10+ and Node.js 20+.
 
 ```sh
-python scripts/build_data.py          # writes data/events.json (first run: ~6 min, then seconds)
+python scripts/build_data.py          # writes data/events.json and data/ottawa/events.json
+                                      # (first run: ~6 min for Montréal, ~25 min for Ottawa; then minutes)
 cd site
 npm install                           # once
 npm run dev                           # open http://localhost:5173
@@ -91,6 +101,7 @@ Other commands:
 
 ```sh
 python scripts/build_data.py --no-enrich   # fast, but no times/venues
+python scripts/build_data.py --city ottawa # one city only
 python -m unittest discover tests          # Python tests
 python scripts/explore.py                  # re-run the data exploration report
 ```
@@ -222,12 +233,15 @@ the previous `events.json`. (Use `--force` if a big drop is expected.)
 | `links` | list | `{type: website\|facebook\|instagram\|phone, url}` found in the source text |
 | `organizer` | string \| null | Loisirs Montréal only: the promoter (borough or organization) |
 | `status` | string | `scheduled` or `postponed` (cancelled ones are dropped) |
-| `source`, `language` | string | `ville-de-montreal`, `loisirs-montreal`, `concordia`, `uqam` or `udem`; `fr` or `en` |
+| `source`, `language` | string | `ville-de-montreal`, `loisirs-montreal`, `concordia`, `uqam`, `udem`, `ottawa-library`, `carleton` or `uottawa`; `fr` or `en` |
+| `city` | string | `montreal` or `ottawa` (added by the pipeline from the adapter's `CITY`) |
 
 ## Adding a source
 
 Create `sources/<name>.py` with `SOURCE_ID`, `load(cache_dir)` (returns events in the schema
 above) and optionally `enrich(events, cache_path)`, then add it to `ADAPTERS` in
-`sources/__init__.py`. Shared helpers (borough names, Montréal time offsets, link
+`sources/__init__.py`. A source outside Montréal sets `CITY = "ottawa"` (or a new
+city: add it to `CITIES` in `scripts/build_data.py` and `site/src/city.ts`, copy its
+data in `site/scripts/copy-data.mjs`, and give it pages like `site/ottawa/`). Shared helpers (borough names, Montréal time offsets, link
 extraction) are in `sources/common.py`. Add fixtures and tests in `tests/`, and the
 source's name to `SOURCE_NAMES` in `site/src/i18n.ts`.

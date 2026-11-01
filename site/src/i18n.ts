@@ -281,6 +281,9 @@ export const SOURCE_NAMES: Record<string, string> = {
   "concordia": "Concordia University — Events",
   "uqam": "UQAM — Événements",
   "udem": "Université de Montréal — Calendrier",
+  "ottawa-library": "Ottawa Public Library / Bibliothèque publique d'Ottawa",
+  "carleton": "Carleton University — Events",
+  "uottawa": "Université d'Ottawa / University of Ottawa — Events",
 };
 
 export function categoryLabel(slug: string, l: Lang = lang): string {

@@ -82,7 +82,16 @@ button { cursor: pointer; }
 .view-link:hover { color: var(--paper); }
 .view-link[aria-current="page"] { color: var(--lime); font-weight: 700; border-bottom-color: var(--lime); }
 
-.topbar-end { flex: 1 1 120px; display: flex; justify-content: flex-end; }
+.topbar-end { flex: 1 1 120px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
+
+/* City switcher: Montréal / Ottawa, each city with its own pages and data. */
+.city-switch { display: flex; height: 44px; border: 1.5px solid var(--outline-on-dark); border-radius: 8px; overflow: hidden; }
+.city-link {
+  display: inline-flex; align-items: center; padding: 0 12px; font-size: 14px;
+  color: var(--muted-on-dark); text-decoration: none;
+}
+.city-link:hover { color: var(--paper); }
+.city-link[aria-current="true"] { background: var(--lime); color: var(--ink); font-weight: 700; }
 
 .btn-dark {
   height: 44px; padding: 0 14px; border: 1.5px solid var(--outline-on-dark); border-radius: 8px;
@@ -491,6 +500,8 @@ dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
   .logo svg { width: 24px; height: 20px; }
   .views { display: none; }
   .lang-btn { height: 40px; padding: 0 12px; font-size: 13px; }
+  .city-switch { height: 40px; }
+  .city-link { padding: 0 10px; font-size: 13px; }
 
   .hero { padding-top: 4px; padding-bottom: 16px; gap: 14px; }
   .hero h1 { font-size: 30px; line-height: 1.1; letter-spacing: -0.01em; }

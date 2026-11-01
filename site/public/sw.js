@@ -24,6 +24,8 @@ const SHELL = [
   "./", "index.html", "calendar.html", "map.html", "about.html",
   "manifest.webmanifest", "favicon.svg", "icons/icon-192.png",
   "data/events.json", "data/meta.json",
+  "ottawa/", "ottawa/index.html", "ottawa/calendar.html", "ottawa/map.html",
+  "ottawa/data/events.json", "ottawa/data/meta.json",
 ];
 
 self.addEventListener("install", (event) => {

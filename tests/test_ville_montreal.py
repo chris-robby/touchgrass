@@ -139,10 +139,23 @@ class BuildFilterTests(unittest.TestCase):
         self.assertFalse(build_data.has_ended(evening, self.now))
 
     def test_coordinates_outside_montreal_are_dropped(self):
-        online = build_data.valid_coordinates({"lat": 0.0, "lng": 0.0})
+        online = build_data.valid_coordinates({"lat": 0.0, "lng": 0.0}, "montreal")
         self.assertEqual((online["lat"], online["lng"]), (None, None))
-        ok = build_data.valid_coordinates({"lat": 45.5124, "lng": -73.5607})
+        ok = build_data.valid_coordinates({"lat": 45.5124, "lng": -73.5607}, "montreal")
         self.assertEqual((ok["lat"], ok["lng"]), (45.5124, -73.5607))
+
+    def test_each_city_has_its_own_box(self):
+        # Ottawa's Parliament Hill is not a valid Montréal pin, and the reverse.
+        hill = build_data.valid_coordinates({"lat": 45.4236, "lng": -75.7009}, "montreal")
+        self.assertEqual((hill["lat"], hill["lng"]), (None, None))
+        hill = build_data.valid_coordinates({"lat": 45.4236, "lng": -75.7009}, "ottawa")
+        self.assertEqual(hill["lat"], 45.4236)
+        old_port = build_data.valid_coordinates({"lat": 45.5075, "lng": -73.5540}, "ottawa")
+        self.assertEqual((old_port["lat"], old_port["lng"]), (None, None))
+
+    def test_every_adapter_belongs_to_a_known_city(self):
+        for adapter in build_data.ADAPTERS:
+            self.assertIn(build_data.adapter_city(adapter), build_data.CITIES, adapter.SOURCE_ID)
 
     def test_dedupe_keeps_first(self):
         out = build_data.dedupe([{"id": "a", "n": 1}, {"id": "a", "n": 2}, {"id": "b"}])

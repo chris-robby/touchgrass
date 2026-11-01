@@ -5,6 +5,7 @@
 // Preferences never hide anything: matching events move up (prefsScore, used by
 // likes.ts's personalScore). matchesPrefs only counts matches for the panel.
 import type { Ev } from "./data";
+import { city, cityLabel } from "./city";
 import { lang } from "./i18n";
 
 export interface Prefs {
@@ -41,7 +42,8 @@ export const AUDIENCES: { id: string; label: Label; accepts: string[] }[] = [
 
 export const label = (l: Label) => (lang === "fr" ? l[0] : l[1]);
 
-const KEY = "tg-prefs";
+// Per city: areas differ from one city to the next.
+const KEY = city.id === "montreal" ? "tg-prefs" : `tg-prefs-${city.id}`;
 const EMPTY: Prefs = { interests: [], audiences: [], boroughs: [], freeOnly: false };
 
 function read(): Prefs | null {
@@ -127,7 +129,7 @@ export function prefsSummary(p = getPrefs()): string {
     ...AUDIENCES.filter((a) => p.audiences.includes(a.id)).map((a) => label(a.label)),
   ];
   if (names.length) parts.push(names.length > 3 ? `${names.slice(0, 3).join(", ")} +${names.length - 3}` : names.join(", "));
-  if (p.boroughs.length) parts.push(p.boroughs.length > 2 ? `${p.boroughs.length} ${lang === "fr" ? "arrondissements" : "boroughs"}` : p.boroughs.join(", "));
+  if (p.boroughs.length) parts.push(p.boroughs.length > 2 ? `${p.boroughs.length} ${cityLabel(city.areaPlural)}` : p.boroughs.join(", "));
   if (p.freeOnly) parts.push(lang === "fr" ? "gratuit" : "free");
   return parts.join(" · ");
 }
