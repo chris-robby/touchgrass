@@ -4,6 +4,7 @@ import {
   byDisplayOrder, dateRange, Ev, Filters, filtersToParams, groupSeries, hasActiveFilters, loadEvents, matches,
   readFilters, seriesKey, setParams,
 } from "../data";
+import { openHomeCity } from "../city";
 import { openDetail, setSeriesLookup, syncDetail } from "../detail";
 import { emptyHtml, refreshForYou, setupForYou } from "../forYou";
 import { dayGroupLabel, fmtLongDate, fmtShortDate, hourOf } from "../format";
@@ -17,6 +18,7 @@ const PAGE_SIZE = 60;
 const PARTS_MIN_ROWS = 12; // only busy days get Morning/Afternoon/Evening
 const TOP_PER_DAY = 6; // personal matches shown first each day; the rest keep their time order
 
+openHomeCity();
 const shell = renderShell("list");
 let f: Filters = readFilters();
 updateNavLinks(f);

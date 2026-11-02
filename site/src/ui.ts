@@ -2,7 +2,7 @@
 import { Ev, Filters, filterQuery, hasActiveFilters, loadMeta } from "./data";
 import { fmtUpdated, timeColumn } from "./format";
 import { categoryLabel, categorySlugs, lang, priceTag, seriesLabel, setLang, t } from "./i18n";
-import { aboutHref, CITIES, city, cityHref, cityLabel, rootPath } from "./city";
+import { aboutHref, CITIES, city, cityHref, cityLabel, rememberCity, rootPath } from "./city";
 import { isLiked, likeKey, toggleLike } from "./likes";
 
 export type Page = "list" | "calendar" | "map" | "about";
@@ -40,6 +40,7 @@ export interface Shell {
 
 /** Builds the page frame. The language button reloads the page in the other language. */
 export function renderShell(page: Page): Shell {
+  rememberCity();
   const navLinks = (cls: string, withIcons: boolean) =>
     PAGES.map((p) => `<a class="${cls}" data-nav="${cityHref(city, p.file)}" href="${cityHref(city, p.file)}"${p.page === page ? ' aria-current="page"' : ""}>${withIcons ? p.icon : ""}${esc(p.label())}</a>`).join("");
   // City switcher: each city's list page (filters don't carry over: boroughs differ).

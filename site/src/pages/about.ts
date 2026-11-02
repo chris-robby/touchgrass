@@ -49,6 +49,11 @@ const fr = `
   (étiquettes « INSCRIPTION » et « BILLET »). Vérifiez toujours la page officielle :
   c'est elle qui fait foi.</p>
 
+  <h2>Vie privée</h2>
+  <p>Pas de compte, pas de témoins publicitaires, pas de statistiques. Vos cœurs, préférences, langue et ville
+  restent dans ce navigateur. À votre première visite seulement, l'adresse IP sert à deviner la ville la plus proche
+  (service <a href="https://www.geojs.io/">GeoJS</a>); ensuite, le site s'ouvre sur la dernière ville consultée.</p>
+
   <h2>Crédits</h2>
   <p>Données : Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Université Concordia, UQAM, Université de Montréal.
   Contient de l'information visée par la licence de données ouvertes de la Ville d'Ottawa (Bibliothèque publique d'Ottawa); Université Carleton, Université d'Ottawa.
@@ -92,6 +97,11 @@ const en = `
   <p>Many events need <strong>registration</strong> or a <strong>free ticket</strong>
   (the "REGISTER" and "TICKET" tags). Always check the official page — it has the final word.</p>
   <p>Montréal event titles and descriptions come from the city and are mostly in French.</p>
+
+  <h2>Privacy</h2>
+  <p>No accounts, no ad cookies, no analytics. Your hearts, preferences, language and city stay in this browser.
+  On your first visit only, your IP address is used to guess the nearest city (via <a href="https://www.geojs.io/">GeoJS</a>);
+  after that, the site opens on the last city you looked at.</p>
 
   <h2>Credits</h2>
   <p>Data: Ville de Montréal (Événements publics; Loisirs Montréal), CC BY 4.0; Concordia University, UQAM, Université de Montréal.
