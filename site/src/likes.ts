@@ -3,6 +3,7 @@
 // so the heart stays filled as its next date moves along.
 //
 // Likes never hide anything: they only move similar events up (see personalScore).
+import { city } from "./city";
 import { Ev, seriesKey } from "./data";
 import { prefsScore } from "./prefs";
 
@@ -15,6 +16,7 @@ interface Like {
   venue: string | null;
   words: string[]; // meaningful title words
   at: number; // when it was liked (ms)
+  city?: string; // missing on likes saved before cities were tracked (see adoptLikes)
 }
 
 const KEY = "tg-likes";
@@ -53,7 +55,19 @@ function save(): void {
 
 export const likeKey = (e: Ev) => seriesKey(e);
 export const isLiked = (e: Ev) => keys.has(likeKey(e));
-export const likeCount = () => likes.length;
+/** Likes for this page's city (each city counts its own). */
+export const likeCount = () => likes.filter((l) => l.city === city.id).length;
+
+/** Older likes were saved without a city: tag the ones that match this city's events. */
+export function adoptLikes(events: Ev[]): void {
+  if (!likes.some((l) => !l.city)) return;
+  const here = new Set(events.map(likeKey));
+  let changed = false;
+  for (const l of likes) {
+    if (!l.city && here.has(l.key)) { l.city = city.id; changed = true; }
+  }
+  if (changed) save();
+}
 
 /** Like or unlike; returns the new state. */
 export function toggleLike(e: Ev): boolean {
@@ -63,7 +77,7 @@ export function toggleLike(e: Ev): boolean {
   } else {
     likes.push({
       key, category: e.category, audience: e.audience, borough: e.borough, venue: e.venue,
-      words: titleWords(e.title), at: Date.now(),
+      words: titleWords(e.title), at: Date.now(), city: city.id,
     });
   }
   save();

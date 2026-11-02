@@ -1,6 +1,6 @@
 // Loading events.json, date helpers (all in Montréal time), filters and URL state.
 import { categoryLabel } from "./i18n";
-import { isLiked } from "./likes";
+import { adoptLikes, isLiked } from "./likes";
 
 export const TZ = "America/Toronto";
 
@@ -117,7 +117,9 @@ export async function loadEvents(): Promise<Ev[]> {
   const res = await fetch("data/events.json");
   if (!res.ok) throw new Error(`events.json: HTTP ${res.status}`);
   const raw: RawEvent[] = await res.json();
-  return raw.map(prepare).sort((a, b) => a.startMs - b.startMs);
+  const events = raw.map(prepare).sort((a, b) => a.startMs - b.startMs);
+  adoptLikes(events);
+  return events;
 }
 
 export async function loadMeta(): Promise<Meta | null> {
