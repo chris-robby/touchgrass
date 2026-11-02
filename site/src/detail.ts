@@ -12,7 +12,7 @@ import { addPin, createMap } from "./map";
 import { esc, icons, likeButtonHtml, tagsHtml } from "./ui";
 
 /** A wide version of the event photo for the top of the detail view. */
-function bannerUrl(url: string): string {
+export function bannerUrl(url: string): string {
   if (url.includes("res.cloudinary.com/")) {
     return url.replace(/\/upload\/[^/]*c_l?fill[^/]*\//, "/upload/w_1200,h_500,c_fill,g_auto/");
   }

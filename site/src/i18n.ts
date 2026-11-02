@@ -33,6 +33,7 @@ const fr = {
   "nav.list": "Liste",
   "nav.calendar": "Calendrier",
   "nav.map": "Carte",
+  "nav.swipe": "Découvrir",
   "lang.switch": "Switch to English",
   "hero.title": "Des choses gratuites à faire.",
   "hero.sub":
@@ -124,6 +125,7 @@ const en: Record<Key, string> = {
   "nav.views": "Views",
   "nav.list": "List",
   "nav.calendar": "Calendar",
+  "nav.swipe": "Discover",
   "nav.map": "Map",
   "lang.switch": "Passer en français",
   "hero.title": "Free things to do.",

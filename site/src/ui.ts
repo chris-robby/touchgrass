@@ -5,7 +5,7 @@ import { categoryLabel, categorySlugs, lang, priceTag, seriesLabel, setLang, t }
 import { aboutHref, CITIES, city, cityHref, cityLabel, rememberCity, rootPath } from "./city";
 import { isLiked, likeKey, toggleLike } from "./likes";
 
-export type Page = "list" | "calendar" | "map" | "about";
+export type Page = "list" | "calendar" | "map" | "swipe" | "about";
 
 export function esc(s: string | null | undefined): string {
   return (s ?? "").replace(/[&<>"']/g, (c) =>
@@ -23,6 +23,7 @@ export const icons = {
   calendar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>`,
   sliders: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>`,
   heart: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-9.2-9.4C1.7 7.4 3.9 4 7.3 4c2 0 3.6 1.1 4.7 2.7C13.1 5.1 14.7 4 16.7 4c3.4 0 5.6 3.4 4.5 6.6C19.5 15.4 12 20 12 20z"/></svg>`,
+  cards: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="12" height="16" rx="2" transform="rotate(12 13 11)"/><rect x="4" y="5" width="12" height="16" rx="2" fill="var(--ink)"/></svg>`,
   pin: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
 };
 
@@ -30,6 +31,7 @@ const PAGES: { page: Page; file: string; label: () => string; icon: string }[] =
   { page: "list", file: "index.html", label: () => t("nav.list"), icon: icons.list },
   { page: "calendar", file: "calendar.html", label: () => t("nav.calendar"), icon: icons.calendar },
   { page: "map", file: "map.html", label: () => t("nav.map"), icon: icons.pin },
+  { page: "swipe", file: "swipe.html", label: () => t("nav.swipe"), icon: icons.cards },
 ];
 
 export interface Shell {
@@ -77,7 +79,7 @@ export function renderShell(page: Page): Shell {
   document.body.dataset.page = page;
   // The HTML files carry French titles; set them in the visitor's language.
   const titles: Record<Page, string> = {
-    list: t("hero.title").replace(/\.$/, ""), calendar: t("nav.calendar"), map: t("nav.map"), about: t("about.title"),
+    list: t("hero.title").replace(/\.$/, ""), calendar: t("nav.calendar"), map: t("nav.map"), swipe: t("nav.swipe"), about: t("about.title"),
   };
   document.title = page === "about" ? `${titles[page]} — touchgrass` : `${titles[page]} · ${city.name} — touchgrass`;
 

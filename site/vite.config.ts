@@ -12,11 +12,13 @@ export default defineConfig({
         index: resolve(import.meta.dirname, "index.html"),
         calendar: resolve(import.meta.dirname, "calendar.html"),
         map: resolve(import.meta.dirname, "map.html"),
+        swipe: resolve(import.meta.dirname, "swipe.html"),
         about: resolve(import.meta.dirname, "about.html"),
         // Each city other than Montréal has its own pages in its own folder.
         "ottawa/index": resolve(import.meta.dirname, "ottawa/index.html"),
         "ottawa/calendar": resolve(import.meta.dirname, "ottawa/calendar.html"),
         "ottawa/map": resolve(import.meta.dirname, "ottawa/map.html"),
+        "ottawa/swipe": resolve(import.meta.dirname, "ottawa/swipe.html"),
       },
     },
   },

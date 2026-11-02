@@ -21,10 +21,10 @@ const FONTS = `tg-fonts-${VERSION}`;
 const MATCH = { ignoreVary: true };
 
 const SHELL = [
-  "./", "index.html", "calendar.html", "map.html", "about.html",
+  "./", "index.html", "calendar.html", "map.html", "swipe.html", "about.html",
   "manifest.webmanifest", "favicon.svg", "icons/icon-192.png",
   "data/events.json", "data/meta.json",
-  "ottawa/", "ottawa/index.html", "ottawa/calendar.html", "ottawa/map.html",
+  "ottawa/", "ottawa/index.html", "ottawa/calendar.html", "ottawa/map.html", "ottawa/swipe.html",
   "ottawa/data/events.json", "ottawa/data/meta.json",
 ];
 
