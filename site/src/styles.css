@@ -615,13 +615,14 @@ dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
 .swipe-whens { display: flex; gap: 6px; min-width: 0; }
 .swipe-whens .chip-btn { height: 36px; padding: 0 12px; font-size: 14px; white-space: nowrap; }
 .swipe-likes {
-  display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: var(--heart);
-  font-weight: 700; padding: 6px 10px; border-radius: 999px; background: var(--paper-raised); border: 1.5px solid var(--line);
+  display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: var(--heart); flex: none;
+  font-weight: 700; padding: 6px 12px; min-height: 40px; border-radius: 999px; background: var(--paper-raised); border: 1.5px solid var(--line);
 }
+.swipe-likes:hover { border-color: var(--ink); }
 .swipe-likes span { color: var(--ink); }
 .swipe-likes svg { fill: var(--heart); }
 
-.swipe-stack { position: relative; width: 100%; max-width: 420px; height: clamp(380px, calc(100vh - 290px), 600px); margin-top: 14px; }
+.swipe-stack { position: relative; width: 100%; max-width: 420px; height: clamp(380px, calc(100vh - 340px), 600px); margin-top: 14px; }
 .swipe-card {
   position: absolute; inset: 0; border-radius: 20px; overflow: hidden; background: var(--ink);
   box-shadow: 0 10px 30px rgb(19 40 30 / 0.25); touch-action: pan-y; user-select: none; cursor: grab;
@@ -630,9 +631,11 @@ dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
 .swipe-card:active { cursor: grabbing; }
 .swipe-card.is-back { transform: scale(0.95) translateY(12px); filter: brightness(0.92); pointer-events: none; }
 .swipe-card.is-back.is-rising { transform: none; filter: none; transition: transform 0.26s ease-out, filter 0.26s; }
-.swipe-photo { flex: 1 1 auto; min-height: 0; width: 100%; object-fit: cover; display: block; background: var(--forest); }
-.swipe-photo-none { display: flex; align-items: center; justify-content: center; color: var(--lime); }
-.swipe-photo-none svg { width: 96px; height: 84px; opacity: 0.7; }
+.swipe-photo {
+  flex: 1 1 auto; min-height: 0; width: 100%; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; color: rgb(255 255 255 / 0.75);
+}
+.swipe-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .swipe-info { flex: 0 0 auto; padding: 16px 18px 18px; background: var(--ink); color: var(--paper); }
 .swipe-cat { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--lime); }
 .swipe-title {
@@ -677,8 +680,81 @@ dialog.prefs::backdrop { background: rgba(19, 40, 30, 0.55); }
 
 @media (max-width: 720px) {
   .swipe-main { padding-top: 10px; }
-  .swipe-stack { height: calc(100svh - 330px); min-height: 360px; margin-top: 10px; }
+  .swipe-stack { height: calc(100svh - 360px); min-height: 360px; margin-top: 10px; }
   .swipe-actions { margin-top: 12px; }
   .swipe-hint { font-size: 13px; }
   .swipe-whens .chip-btn { padding: 0 10px; }
+}
+
+.ev-aud { font-weight: 700; color: var(--forest); }
+
+/* Discover: filters under the date chips */
+.swipe-filters {
+  width: 100%; max-width: 420px; display: flex; align-items: center; gap: 6px; margin-top: 8px;
+  overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;
+}
+.swipe-filters::-webkit-scrollbar { display: none; }
+.swipe-filters > * { flex: none; }
+.swipe-filters[hidden] { display: none; }
+.swipe-filters .chip-btn { height: 36px; padding: 0 12px; font-size: 14px; white-space: nowrap; }
+.swipe-filters .select-label select { height: 36px; font-size: 14px; max-width: 170px; }
+
+/* Discover: card details */
+.swipe-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; box-shadow: 0 0 0 1.5px var(--paper); }
+.swipe-also { margin: 2px 0 0; color: var(--lime); font-size: 14px; }
+.swipe-starter {
+  position: absolute; left: 12px; right: 12px; bottom: auto; top: 12px; display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px; border-radius: 12px; background: rgb(19 40 30 / 0.82); color: var(--paper); font-size: 14px;
+}
+.swipe-starter strong { color: var(--lime); }
+.swipe-step { margin-left: auto; font-size: 12px; color: var(--muted-on-dark); font-weight: 700; }
+.swipe-card:has(.swipe-starter) .swipe-stamp { top: 64px; }
+
+/* Discover: getting-started question */
+.swipe-ask { background: var(--paper-raised); color: var(--ink); border: 2px solid var(--ink); cursor: default; }
+.swipe-ask-inner { padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; height: 100%; justify-content: center; overflow-y: auto; }
+.swipe-ask-kicker { margin: 0; color: var(--forest); }
+.swipe-ask-title { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.15; }
+.swipe-ask-note { margin: 0; color: var(--muted); font-size: 15px; }
+.swipe-ask .link-btn { align-self: center; }
+
+/* Discover: wiggle once to show cards can be swiped */
+@keyframes swipe-wiggle {
+  0%, 100% { transform: none; }
+  20% { transform: translateX(26px) rotate(2deg); }
+  45% { transform: translateX(-22px) rotate(-2deg); }
+  65% { transform: translateX(10px) rotate(1deg); }
+}
+.swipe-card.wiggle { animation: swipe-wiggle 1.3s ease-in-out 0.8s 1; }
+
+/* Discover: what I liked */
+dialog.likes-sheet { max-width: 560px; }
+.likes-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.likes-actions .btn { gap: 8px; }
+.likes-actions .btn-primary { flex: 1 1 200px; }
+.likes-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.likes-row { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--line); }
+.likes-open {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; text-align: left;
+  border: 0; background: transparent; padding: 12px 0;
+}
+.likes-open:hover .likes-title { text-decoration: underline; }
+.likes-when { font-size: 13px; font-weight: 700; color: var(--forest); }
+.likes-title { font-weight: 700; }
+.likes-venue { font-size: 14px; color: var(--muted); }
+.likes-sheet .prefs-hint { padding-bottom: 20px; }
+
+/* Short message at the bottom (above the phone nav) */
+.toast {
+  position: fixed; left: 50%; top: 84px; transform: translateX(-50%); z-index: 1200; margin: 0;
+  width: max-content; max-width: min(440px, calc(100% - 32px)); padding: 12px 16px; border-radius: 10px;
+  background: var(--ink); color: var(--paper); box-shadow: 0 6px 20px rgb(19 40 30 / 0.3); font-size: 15px;
+  transition: opacity 0.4s;
+}
+.toast-out { opacity: 0; }
+
+@media (max-width: 720px) {
+  .toast { top: 76px; }
+  .swipe-filters .select-label select { max-width: 132px; padding: 0 6px; }
+  .swipe-filters .chip-btn { padding: 0 10px; }
 }

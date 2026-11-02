@@ -224,10 +224,9 @@ function placeText(e: Ev): string {
   return [e.venue, e.address].filter(Boolean).join(", ");
 }
 
-function downloadIcs(e: Ev): void {
+function veventLines(e: Ev): string[] {
   const end = e.end ? e.endMs : e.startMs + 60 * 60 * 1000;
-  const lines = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//touchgrass//events//FR", "CALSCALE:GREGORIAN",
+  return [
     "BEGIN:VEVENT",
     `UID:${e.id}@touchgrass`,
     `DTSTAMP:${utcStamp(Date.now())}`,
@@ -237,12 +236,22 @@ function downloadIcs(e: Ev): void {
     `DESCRIPTION:${icsText(`${e.description}\n\n${e.url ?? ""}`.trim())}`,
     `LOCATION:${icsText(placeText(e))}`,
     e.url ? `URL:${e.url}` : "",
-    "END:VEVENT", "END:VCALENDAR",
+    "END:VEVENT",
+  ];
+}
+
+/** Downloads a calendar file with one or more events. */
+export function downloadIcs(evs: Ev | Ev[], fileName?: string): void {
+  const list = Array.isArray(evs) ? evs : [evs];
+  const lines = [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//touchgrass//events//FR", "CALSCALE:GREGORIAN",
+    ...list.flatMap(veventLines),
+    "END:VCALENDAR",
   ].filter(Boolean).map(fold);
   const blob = new Blob([lines.join("\r\n") + "\r\n"], { type: "text/calendar;charset=utf-8" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `${e.title.replace(/[^\p{L}\p{N}]+/gu, "-").slice(0, 60)}.ics`;
+  a.download = `${(fileName ?? list[0].title).replace(/[^\p{L}\p{N}]+/gu, "-").slice(0, 60)}.ics`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }

@@ -1,11 +1,12 @@
 // "For you" UI: the first-visit question, the preferences panel (opened from the
-// filter button in the search bar), and the bar above results that says what
-// goes first, with "Edit". Preferences only reorder: every event stays listed.
+// filter button in the search bar), and the bar above results that says what is
+// shown, with a switch between "only these" (default) and "everything, these first".
 import type { Ev, Filters } from "./data";
 import { city } from "./city";
 import { countLabel, lang, t } from "./i18n";
 import {
-  AUDIENCES, getPrefs, INTERESTS, label, matchesPrefs, Prefs, prefsCount, prefsSeen, prefsSummary, savePrefs,
+  AUDIENCES, EMPTY_PREFS, getPrefs, INTERESTS, label, matchesPrefs, Prefs, prefsCount, prefsSeen, prefsSummary,
+  savePrefs, setStrict, showOnlyMine,
 } from "./prefs";
 import { esc, icons } from "./ui";
 
@@ -24,9 +25,18 @@ const T = {
   price: fr ? "Prix" : "Price",
   freeOnly: fr ? "Gratuit seulement" : "Free only",
   save: fr ? "Voir les activités" : "See events",
-  matching: (n: number) => (fr
-    ? `${countLabel(n)} correspondent à vos choix : elles passeront en premier. Les autres restent dans la liste.`
-    : `${countLabel(n)} match your choices: they'll come first. Everything else stays in the list.`),
+  matching: (n: number, strict: boolean) => (fr
+    ? `${countLabel(n)} correspondent à vos choix${strict ? "." : " : elles passeront en premier."}`
+    : `${countLabel(n)} match your choices${strict ? "." : ": they'll come first."}`),
+  show: fr ? "Afficher" : "Show",
+  onlyMine: fr ? "Seulement ce qui me correspond" : "Only what matches",
+  mineFirst: fr ? "Tout, mes choix en premier" : "Everything, my picks first",
+  only: fr ? "seulement" : "only",
+  seeAll: fr ? "Tout voir" : "Show everything",
+  onlyThese: fr ? "Seulement pour moi" : "Just mine",
+  emptyMine: fr
+    ? "Rien ne correspond à vos préférences avec ces filtres."
+    : "Nothing matches your preferences with these filters.",
   skip: fr ? "Passer" : "Skip",
   clear: fr ? "Tout effacer" : "Clear all",
   close: fr ? "Fermer" : "Close",
@@ -59,6 +69,12 @@ export function setupForYou(options: Options): void {
   document.addEventListener("click", (ev) => {
     const target = ev.target as HTMLElement;
     if (target.closest(".search-filter-btn") || target.closest("[data-foryou='edit']")) openPrefs(false);
+    const strict = target.closest<HTMLElement>("[data-foryou='strict']");
+    if (strict) {
+      setStrict(strict.dataset.on === "1");
+      opts.onPatch({});
+      refreshForYou();
+    }
   });
 
   refreshForYou();
@@ -76,14 +92,19 @@ export function refreshForYou(): void {
   // No preferences: no bar (the filter button in the search field invites them).
   bar.hidden = n === 0;
   if (n) {
+    const only = showOnlyMine();
     bar.innerHTML = `<div class="wrap foryou-inner"><span class="kicker foryou-kicker">${T.forYou}</span>
-      <span class="foryou-summary">${esc(prefsSummary())} ${T.first}</span>
+      <span class="foryou-summary">${only ? `${T.only} ` : ""}${esc(prefsSummary())}${only ? "" : ` ${T.first}`}</span>
+      <button type="button" class="link-btn" data-foryou="strict" data-on="${only ? "0" : "1"}">${only ? T.seeAll : T.onlyThese}</button>
       <button type="button" class="link-btn" data-foryou="edit">${T.edit}</button></div>`;
   }
 }
 
 /** "No results" message (only filters and search can empty the list). */
 export function emptyHtml(): string {
+  if (showOnlyMine()) {
+    return `<p class="empty">${T.emptyMine} <button type="button" class="link-btn" data-foryou="strict" data-on="0">${T.seeAll}</button></p>`;
+  }
   return `<p class="empty">${t("empty.filters")}</p>`;
 }
 
@@ -134,6 +155,9 @@ function openPrefs(onboarding: boolean): void {
       <fieldset><legend>${T.price}</legend>
         <div class="chips-wrap">${chip("freeOnly", "1", T.freeOnly, draft.freeOnly)}</div>
       </fieldset>
+      <fieldset><legend>${T.show}</legend>
+        <div class="chips-wrap">${chip("strict", "1", T.onlyMine, draft.strict)}${chip("strict", "0", T.mineFirst, !draft.strict)}</div>
+      </fieldset>
       <p class="prefs-hint prefs-matching" aria-live="polite"></p>
       <div class="prefs-actions">
         <button type="button" class="btn btn-primary" data-act="save">${T.save}</button>
@@ -147,7 +171,7 @@ function openPrefs(onboarding: boolean): void {
   const upcoming = opts.events.filter((e) => e.endMs >= now);
   const updateCount = () => {
     matchingEl.hidden = prefsCount(draft) === 0;
-    matchingEl.textContent = T.matching(upcoming.filter((e) => matchesPrefs(e, draft)).length);
+    matchingEl.textContent = T.matching(upcoming.filter((e) => matchesPrefs(e, draft)).length, draft.strict);
   };
   updateCount();
 
@@ -156,7 +180,11 @@ function openPrefs(onboarding: boolean): void {
       const group = btn.dataset.group as keyof Prefs;
       const on = btn.getAttribute("aria-pressed") !== "true";
       btn.setAttribute("aria-pressed", String(on));
-      if (group === "freeOnly") draft.freeOnly = on;
+      if (group === "strict") {
+        draft.strict = btn.dataset.value === "1";
+        d.querySelectorAll<HTMLButtonElement>("[data-group='strict']").forEach((b) =>
+          b.setAttribute("aria-pressed", String((b.dataset.value === "1") === draft.strict)));
+      } else if (group === "freeOnly") draft.freeOnly = on;
       else {
         const list = draft[group] as string[];
         draft[group] = (on ? [...list, btn.dataset.value!] : list.filter((v) => v !== btn.dataset.value)) as never;
@@ -171,10 +199,8 @@ function openPrefs(onboarding: boolean): void {
     refreshForYou();
   };
   saveBtn.addEventListener("click", () => finish(draft));
-  d.querySelector("[data-act='skip']")?.addEventListener("click", () =>
-    finish({ interests: [], audiences: [], boroughs: [], freeOnly: false }));
-  d.querySelector("[data-act='clear']")?.addEventListener("click", () =>
-    finish({ interests: [], audiences: [], boroughs: [], freeOnly: false }));
+  d.querySelector("[data-act='skip']")?.addEventListener("click", () => finish(EMPTY_PREFS));
+  d.querySelector("[data-act='clear']")?.addEventListener("click", () => finish(EMPTY_PREFS));
   d.querySelector("[data-act='close']")!.addEventListener("click", () => d.close());
 
   if (!d.open) d.showModal();

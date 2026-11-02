@@ -1,7 +1,8 @@
 // Shared page pieces: header, footer, mobile bottom nav, filter bar, event rows.
 import { Ev, Filters, filterQuery, hasActiveFilters, loadMeta } from "./data";
 import { fmtUpdated, timeColumn } from "./format";
-import { categoryLabel, categorySlugs, lang, priceTag, seriesLabel, setLang, t } from "./i18n";
+import { audienceShort, categoryLabel, categorySlugs, lang, priceTag, seriesLabel, setLang, t } from "./i18n";
+import { AUDIENCES, INTERESTS, label as prefLabel } from "./prefs";
 import { aboutHref, CITIES, city, cityHref, cityLabel, rememberCity, rootPath } from "./city";
 import { isLiked, likeKey, toggleLike } from "./likes";
 
@@ -155,7 +156,7 @@ export interface FilterBarOptions {
 }
 
 export const NO_FILTERS: Filters = {
-  q: "", when: "", from: "", to: "", cat: "", boro: "", dropin: false, free: false, liked: false,
+  q: "", when: "", from: "", to: "", cat: "", boro: "", aud: "", dropin: false, free: false, liked: false,
 };
 
 /**
@@ -169,7 +170,13 @@ export function renderFilterBar(
   const f = get();
   const whenBtn = (value: string, key: Parameters<typeof t>[0]) =>
     `<button type="button" class="chip-btn" data-when="${value}" aria-pressed="${f.when === value}">${esc(t(key))}</button>`;
-  const cats = [...categorySlugs].sort((a, b) => categoryLabel(a).localeCompare(categoryLabel(b), lang));
+  // Categories grouped like the "For you" interests, so the long list is easy to scan.
+  const byLabel = (a: string, b: string) => categoryLabel(a).localeCompare(categoryLabel(b), lang);
+  const catOption = (c: string) => `<option value="${c}"${c === f.cat ? " selected" : ""}>${esc(categoryLabel(c))}</option>`;
+  const grouped = new Set(INTERESTS.flatMap((i) => i.categories));
+  const catOptions = INTERESTS.map((i) =>
+    `<optgroup label="${esc(prefLabel(i.label))}">${i.categories.filter((c) => categorySlugs.includes(c)).sort(byLabel).map(catOption).join("")}</optgroup>`,
+  ).join("") + categorySlugs.filter((c) => !grouped.has(c)).sort(byLabel).map(catOption).join("");
 
   slot.innerHTML = `
     <section class="filters" aria-label="${t("filters")}">
@@ -194,7 +201,13 @@ export function renderFilterBar(
         <label class="select-label"><span class="sr-only">${t("category")}</span>
           <select name="cat">
             <option value="">${t("category.allLong")}</option>
-            ${cats.map((c) => `<option value="${c}"${c === f.cat ? " selected" : ""}>${esc(categoryLabel(c))}</option>`).join("")}
+            ${catOptions}
+          </select>
+        </label>
+        <label class="select-label"><span class="sr-only">${lang === "fr" ? "Pour qui?" : "Who's it for?"}</span>
+          <select name="aud">
+            <option value="">${lang === "fr" ? "Pour tout le monde" : "Everyone"}</option>
+            ${AUDIENCES.map((a) => `<option value="${a.id}"${a.id === f.aud ? " selected" : ""}>${esc(prefLabel(a.label))}</option>`).join("")}
           </select>
         </label>
         <label class="select-label"><span class="sr-only">${esc(cityLabel(city.area))}</span>
@@ -309,6 +322,8 @@ export interface RowOptions {
 export function eventRowHtml(e: Ev, opts: RowOptions = {}): string {
   const tc = timeColumn(e);
   const bits: string[] = [venueLine(e, !opts.compact)];
+  const who = audienceShort(e.audience);
+  if (who) bits.unshift(`<span class="ev-aud">${esc(who)}</span>`);
   if (e.registration === "required") bits.push(esc(t("meta.required")));
   else if (e.registration === "ticket") bits.push(esc(t("meta.ticket")));
   if (opts.series && opts.series.length > 1) bits.push(esc(seriesLabel(opts.series.length - 1)));

@@ -305,6 +305,20 @@ const AUDIENCES: Record<string, [string, string]> = {
   teens: ["Adolescents", "Teens"],
 };
 
+/** Short "who it's for" for list rows; nothing for events open to everyone or adults. */
+const AUDIENCES_SHORT: Record<string, [string, string]> = {
+  kids: ["Enfants", "Kids"],
+  preschool: ["Tout-petits", "Little ones"],
+  family: ["Famille", "Families"],
+  seniors: ["Aînés", "Seniors"],
+  teens: ["Ados", "Teens"],
+};
+
+export function audienceShort(slug: string | null): string {
+  const pair = slug ? AUDIENCES_SHORT[slug] : null;
+  return pair ? pair[lang === "fr" ? 0 : 1] : "";
+}
+
 export function audienceLabel(slug: string | null): string {
   const pair = slug ? AUDIENCES[slug] : null;
   return pair ? pair[lang === "fr" ? 0 : 1] : "—";

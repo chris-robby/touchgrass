@@ -1,6 +1,7 @@
 // Loading events.json, date helpers (all in Montréal time), filters and URL state.
 import { categoryLabel } from "./i18n";
 import { adoptLikes, isLiked } from "./likes";
+import { fitsAudience, matchesPrefs, showOnlyMine } from "./prefs";
 
 export const TZ = "America/Toronto";
 
@@ -148,6 +149,7 @@ export interface Filters {
   to: string;
   cat: string;
   boro: string;
+  aud: string; // "Who's it for?": an AUDIENCES id from prefs.ts
   dropin: boolean;
   free: boolean;
   liked: boolean; // only events the visitor liked
@@ -176,13 +178,16 @@ export function dateRange(f: Filters, now = today()): [string, string] | null {
   }
 }
 
-export function matches(e: Ev, f: Filters, range: [string, string] | null): boolean {
+/** `mine` = also apply "For you only" when it's on (the default). */
+export function matches(e: Ev, f: Filters, range: [string, string] | null, mine = true): boolean {
   if (range && (e.endDay < range[0] || e.startDay > range[1])) return false;
   if (f.cat && e.category !== f.cat) return false;
   if (f.boro && e.borough !== f.boro) return false;
+  if (f.aud && !fitsAudience(e, f.aud)) return false;
   if (f.dropin && e.registration !== "drop-in") return false;
   if (f.free && !e.is_free) return false;
   if (f.liked && !isLiked(e)) return false;
+  if (mine && showOnlyMine() && !matchesPrefs(e) && !isLiked(e)) return false;
   if (f.q) {
     for (const word of normalize(f.q).split(/\s+/)) {
       if (word && !e.haystack.includes(word)) return false;
@@ -192,7 +197,7 @@ export function matches(e: Ev, f: Filters, range: [string, string] | null): bool
 }
 
 export function hasActiveFilters(f: Filters): boolean {
-  return Boolean(f.q || f.when || f.cat || f.boro || f.dropin || f.free || f.liked);
+  return Boolean(f.q || f.when || f.cat || f.boro || f.aud || f.dropin || f.free || f.liked);
 }
 
 // ---------------------------------------------------------------- URL state
@@ -213,6 +218,7 @@ export function readFilters(): Filters {
     to: day("to"),
     cat: p.get("cat") ?? "",
     boro: p.get("boro") ?? "",
+    aud: p.get("aud") ?? "",
     dropin: p.get("dropin") === "1",
     free: p.get("free") === "1",
     liked: p.get("liked") === "1",
@@ -241,7 +247,7 @@ export function filtersToParams(f: Filters): Record<string, string | boolean> {
   const custom = f.when === "custom";
   return {
     q: f.q, when: f.when, from: custom ? f.from : "", to: custom ? f.to : "",
-    cat: f.cat, boro: f.boro, dropin: f.dropin, free: f.free, liked: f.liked,
+    cat: f.cat, boro: f.boro, aud: f.aud, dropin: f.dropin, free: f.free, liked: f.liked,
   };
 }
 
