@@ -101,16 +101,60 @@ function linkLabel(url: string, type: string): string {
   }
 }
 
-/** "Learn more": organizer links from the data, then Google Maps and Google search. */
+// ---------------------------------------------------------------- open in a maps app
+
+const ua = navigator.userAgent;
+const isAndroid = /Android/i.test(ua);
+const isApple = /iPhone|iPad|iPod|Macintosh/i.test(ua);
+
+interface MapLink { id: string; label: string; href: string }
+
+/** Links that open the event's place in the visitor's maps app: Google Maps, Apple Plans,
+ *  Waze, and on Android "another app" (geo:, which lets the phone pick). The place is
+ *  searched by name and address when we have them (shows the venue's own card),
+ *  otherwise by its coordinates. Apple devices get Apple Plans first. */
+export function mapLinks(e: Ev): MapLink[] {
+  const place = [e.venue, e.address].filter(Boolean).join(", ");
+  const hasPin = e.lat != null && e.lng != null;
+  if (!place && !hasPin) return [];
+  const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const withCity = place && !norm(place).includes(norm(city.name)) ? `${place}, ${city.name}` : place;
+  const q = withCity || `${e.lat},${e.lng}`;
+  const ll = hasPin ? `${e.lat},${e.lng}` : "";
+  const enc = encodeURIComponent;
+  const links: MapLink[] = [
+    { id: "google", label: "Google Maps", href: `https://www.google.com/maps/search/?api=1&query=${enc(q)}` },
+    {
+      id: "apple", label: lang === "fr" ? "Plans (Apple)" : "Apple Maps",
+      href: `https://maps.apple.com/?q=${enc(place ? (e.venue ?? place) : q)}${ll ? `&ll=${ll}` : `&address=${enc(q)}`}`,
+    },
+    { id: "waze", label: "Waze", href: ll ? `https://waze.com/ul?ll=${ll}&navigate=yes` : `https://waze.com/ul?q=${enc(q)}&navigate=yes` },
+  ];
+  if (isAndroid) {
+    links.push({
+      id: "geo", label: lang === "fr" ? "Autre app…" : "Other app…",
+      href: ll ? `geo:${ll}?q=${ll}(${enc(e.venue ?? e.title)})` : `geo:0,0?q=${enc(q)}`,
+    });
+  }
+  if (isApple) links.unshift(links.splice(1, 1)[0]);
+  return links;
+}
+
+function mapLinksHtml(e: Ev): string {
+  const links = mapLinks(e);
+  if (!links.length) return "";
+  return `
+    <div class="open-in" role="group" aria-label="${lang === "fr" ? "Ouvrir le lieu dans une app de cartes" : "Open the place in a maps app"}">
+      <span class="open-in-label">${icons.pin}${lang === "fr" ? "Ouvrir dans" : "Open in"}</span>
+      ${links.map((l) => `<a class="chip-btn open-in-link" data-map="${l.id}" href="${esc(l.href)}"${l.id === "geo" ? "" : ' target="_blank" rel="noopener"'}>${esc(l.label)}</a>`).join("")}
+    </div>`;
+}
+
+/** "Learn more": organizer links from the data, then Google search. (Maps apps are under the map.) */
 function learnMoreHtml(e: Ev): string {
   const items: { href: string; label: string; kind: string }[] = e.links.map((l) => ({
     href: l.url, label: linkLabel(l.url, l.type), kind: l.type,
   }));
-  const place = [e.venue, e.address].filter(Boolean).join(", ");
-  if (place || e.lat != null) {
-    const query = place ? `${place}, ${city.name}` : `${e.lat},${e.lng}`;
-    items.push({ href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, label: t("detail.maps"), kind: "maps" });
-  }
   const q = [e.title, e.venue ?? "", city.name].filter(Boolean).join(" ");
   items.push({ href: `https://www.google.com/search?q=${encodeURIComponent(q)}`, label: t("detail.search"), kind: "search" });
 
@@ -155,7 +199,8 @@ export function openDetail(e: Ev, push = true): void {
         <dt>${t("detail.access")}</dt><dd>${esc(accessText(e))}</dd>
       </dl>
       ${otherDatesHtml(e)}
-      ${e.lat != null ? `<div class="detail-map" role="img" aria-label="${t("detail.mapLabel")}"></div>` : ""}
+      ${e.lat != null ? `<div class="detail-map" role="img" aria-label="${t("detail.mapLabel")}" title="${lang === "fr" ? "Ouvrir dans une app de cartes" : "Open in a maps app"}"></div>` : ""}
+      ${mapLinksHtml(e)}
       ${learnMoreHtml(e)}
       <div class="detail-actions">
         ${e.url ? `<a class="btn btn-primary" href="${esc(e.url)}" target="_blank" rel="noopener">${t(e.source === "loisirs-montreal" ? "detail.officialLoisirs" : "detail.official")}</a>` : ""}
@@ -188,6 +233,9 @@ export function openDetail(e: Ev, push = true): void {
     miniMap = createMap(mapEl, { scrollWheelZoom: false });
     miniMap.setView([e.lat, e.lng], 15);
     addPin(miniMap, e.lat, e.lng);
+    // Tapping the small map opens the place in the first maps app (Apple Plans on Apple devices).
+    const first = mapLinks(e)[0];
+    if (first) miniMap.on("click", () => window.open(first.href, "_blank", "noopener"));
   }
 }
 

@@ -758,3 +758,10 @@ dialog.likes-sheet { max-width: 560px; }
   .swipe-filters .select-label select { max-width: 132px; padding: 0 6px; }
   .swipe-filters .chip-btn { padding: 0 10px; }
 }
+
+/* Event detail: open the place in a maps app */
+.detail-map { cursor: pointer; }
+.open-in { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: -4px; }
+.open-in-label { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--muted); margin-right: 2px; }
+.open-in-label svg { width: 16px; height: 16px; }
+.open-in-link { height: 36px; padding: 0 12px; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; color: var(--ink); }
